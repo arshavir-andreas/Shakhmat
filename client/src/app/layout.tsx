@@ -4,6 +4,8 @@ import './globals.css';
 import { PrimeReactProvider } from 'primereact/api';
 import 'primereact/resources/themes/lara-light-green/theme.css';
 
+import StoreProvider from './store/StoreProvider';
+
 const geistSans = localFont({
     src: './fonts/GeistVF.woff',
     variable: '--font-geist-sans',
@@ -32,7 +34,11 @@ export default function RootLayout({
                 className={`${geistSans.variable} ${geistMono.variable} antialiased`}
             >
                 <main>
-                    <PrimeReactProvider>{children}</PrimeReactProvider>
+                    <StoreProvider>
+                        <PrimeReactProvider>
+                            {children}
+                        </PrimeReactProvider>
+                    </StoreProvider>
                 </main>
             </body>
         </html>
