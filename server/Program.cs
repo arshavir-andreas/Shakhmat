@@ -7,6 +7,15 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+builder.Services.AddCors(options => {
+    options.AddPolicy("AllowMainClientPolicy", builder => {
+        builder.WithOrigins("http://localhost:3000")
+            .AllowAnyHeader()
+            .AllowAnyMethod()
+            .AllowCredentials();
+    });
+});
+
 builder.Services.AddSingleton(new EngineMovesService());
 
 var app = builder.Build();
@@ -17,6 +26,8 @@ if (app.Environment.IsDevelopment()) {
 }
 
 // app.UseHttpsRedirection();
+
+app.UseCors("AllowMainClientPolicy");
 
 app.UseMiddleware<ExceptionMiddleware>();
 

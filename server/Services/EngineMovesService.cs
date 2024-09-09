@@ -26,11 +26,11 @@ namespace Server.Services {
             await engineProcess.StandardInput.WriteLineAsync("uci");
             await engineProcess.StandardInput.FlushAsync();
 
-            if (positionToEvaluate.engineELO != null) {
+            if (positionToEvaluate.EngineELO != null) {
                 await engineProcess.StandardInput.WriteLineAsync("setoption name UCI_LimitStrength value true");
                 await engineProcess.StandardInput.FlushAsync();
 
-                await engineProcess.StandardInput.WriteLineAsync($"setoption name UCI_Elo value {positionToEvaluate.engineELO}");
+                await engineProcess.StandardInput.WriteLineAsync($"setoption name UCI_Elo value {positionToEvaluate.EngineELO}");
                 await engineProcess.StandardInput.FlushAsync();
             }
 

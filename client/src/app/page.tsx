@@ -18,11 +18,15 @@ export default function Home() {
         <div className="flex justify-center items-center min-h-screen px-4">
             <div className="w-full max-w-4xl">
                 <div>
-                    <Button
-                        label={`New game`}
-                        onClick={() => setVisible(true)}
-                        className=" mb-[20px]"
-                    />
+                    {!isTheGameReady ? (
+                        <Button
+                            label={`New game`}
+                            onClick={() => setVisible(true)}
+                            className=" mb-[20px]"
+                        />
+                    ) : (
+                        <></>
+                    )}
 
                     <Dialog
                         header={`Play against the Arasan engine`}

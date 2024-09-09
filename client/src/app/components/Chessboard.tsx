@@ -2,7 +2,10 @@ import { Chessboard as ReactChessboard } from 'react-chessboard';
 import { useAppSelector } from '../store';
 import { RootState } from '../store';
 import { InputText } from 'primereact/inputtext';
-import { useEffect, useState } from 'react';
+import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { fetcherIncludingCredentials } from '../utils/axios-fetchers';
+import { Chess } from 'chess.js';
+import { Button } from 'primereact/button';
 
 export default function Chessboard() {
     const isTheUserWhite = useAppSelector(
@@ -19,18 +22,90 @@ export default function Chessboard() {
 
     const [isWhiteTurn, setIsWhiteTurn] = useState(true);
 
-    useEffect(() => {
-        setIsWhiteTurn(false);
+    const game = useMemo(() => {
+        return new Chess();
     }, []);
+
+    const [gamePosition, setGamePosition] = useState(game.fen());
+
+    const [userMove, setUserMove] = useState('');
+
+    const userMoveInputRef = useRef<HTMLInputElement>(null);
+
+    useEffect(() => {
+        async function getEngineBestMove() {
+            const positionToEvaluate: PositionToEvaluate = {
+                engineELO: engineElO,
+                fenPosition: game.fen(),
+            };
+
+            const { data } = (await fetcherIncludingCredentials.post(
+                `/engines/arasan/best-move`,
+                {
+                    ...positionToEvaluate,
+                },
+            )) as { data: EngineResponse };
+
+            game.move({ ...data }, { strict: true });
+
+            setGamePosition(game.fen());
+        }
+
+        if (isWhiteTurn && !isTheUserWhite) {
+            getEngineBestMove();
+
+            setIsWhiteTurn(false);
+        } else if (!isWhiteTurn && isTheUserWhite) {
+            getEngineBestMove();
+
+            setIsWhiteTurn(true);
+        }
+    }, [engineElO, game, isTheUserWhite, isWhiteTurn]);
+
+    useEffect(() => {
+        if (isTheGameReady && userMoveInputRef.current !== null) {
+            if (
+                (isTheUserWhite && isWhiteTurn) ||
+                (!isTheUserWhite && !isWhiteTurn)
+            ) {
+                userMoveInputRef.current.focus();
+            }
+        }
+    }, [isTheGameReady, isTheUserWhite, isWhiteTurn]);
+
+    function handleUserMove(e: FormEvent) {
+        e.preventDefault();
+
+        try {
+            game.move(userMove, { strict: true });
+
+            setUserMove('');
+
+            setGamePosition(game.fen());
+
+            if (isTheUserWhite && isWhiteTurn) {
+                setIsWhiteTurn(false);
+            } else if (!isTheUserWhite && !isWhiteTurn) {
+                setIsWhiteTurn(true);
+            }
+        } catch (error) {
+            console.log((error as Error).message);
+        }
+    }
 
     return (
         <div>
             <div className=" font-bold text-[18px]">
-                {isTheGameReady ? `Engine ${engineElO}` : ''}
+                {isTheGameReady ? (
+                    <span>
+                        Engine {engineElO} {isWhiteTurn && !isTheUserWhite || !isWhiteTurn && isTheUserWhite ? `(Thinking...)` : ``}
+                    </span>
+                ) : <></>}
             </div>
 
             <div className=" w-[300px] sm:w-[650px] my-[10px]">
                 <ReactChessboard
+                    position={gamePosition}
                     showBoardNotation={false}
                     boardOrientation={isTheUserWhite ? `white` : `black`}
                     arePiecesDraggable={false}
@@ -45,17 +120,28 @@ export default function Chessboard() {
             </div>
 
             {isTheGameReady ? (
-                <div>
-                    <label htmlFor="user-move">Move: </label>
+                <form onSubmit={handleUserMove} className=" flex items-center mt-[10px]">
+                    <label htmlFor="user-move" className=" mr-[10px]">Move: </label>
 
                     <InputText
                         id="user-move"
+                        ref={userMoveInputRef}
+                        value={userMove}
+                        onChange={(e) => setUserMove(e.target.value)}
                         disabled={
                             (isTheUserWhite && !isWhiteTurn) ||
                             (!isTheUserWhite && isWhiteTurn)
                         }
+                        className="w-[200px] sm:w-[400px]"
                     />
-                </div>
+
+                    <Button
+                        type="submit"
+                        className=" ml-[10px]"
+                    >
+                        Go
+                    </Button>
+                </form>
             ) : (
                 <></>
             )}
