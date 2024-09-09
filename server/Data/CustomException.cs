@@ -1,6 +1,6 @@
 using System.Net;
 
-namespace Data {
+namespace Server.Data {
     public class CustomException : Exception {
         public HttpStatusCode StatusCode { get; }
 

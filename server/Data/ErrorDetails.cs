@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-namespace Data {
+namespace Server.Data {
     public class ErrorDetails {
         public required int StatusCode { get; set; }
         public required string Message { get; set; }

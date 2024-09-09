@@ -1,7 +1,7 @@
 using System.Net;
-using Data;
+using Server.Data;
 
-namespace Middlewares {
+namespace Server.Middlewares {
     public class ExceptionMiddleware(RequestDelegate next, ILogger<ExceptionMiddleware> logger) {
         private readonly RequestDelegate _next = next;
         private readonly ILogger<ExceptionMiddleware> _logger = logger;

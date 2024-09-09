@@ -1,5 +1,6 @@
-using Middlewares;
 using Server.Services;
+using Server.Middlewares;
+using Server.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
