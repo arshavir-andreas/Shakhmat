@@ -52,14 +52,14 @@ export default function NewGameAgainstEngineSettings() {
                     onValueChange={(e) =>
                         dispatch(setEngineELO(Number(e.value)))
                     }
-                    max={3300}
+                    max={3450}
                     min={1000}
                 />
 
                 <Slider
                     value={engineELO}
                     onChange={(e) => dispatch(setEngineELO(Number(e.value)))}
-                    max={3300}
+                    max={3450}
                     min={1000}
                     step={100}
                 />

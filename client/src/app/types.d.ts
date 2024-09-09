@@ -14,3 +14,7 @@ type EngineResponse = {
     to: string;
     promotion?: string;
 };
+
+type FinishedGameStatus = {
+    winner: 'white' | 'black' | undefined;
+};
