@@ -29,6 +29,7 @@ export const againstEngineGameSlice = createSlice({
     },
 });
 
-export const { setEngineELO, setTheUserColor, startTheGame } = againstEngineGameSlice.actions;
+export const { setEngineELO, setTheUserColor, startTheGame } =
+    againstEngineGameSlice.actions;
 
 export default againstEngineGameSlice.reducer;

@@ -35,9 +35,7 @@ export default function RootLayout({
             >
                 <main>
                     <StoreProvider>
-                        <PrimeReactProvider>
-                            {children}
-                        </PrimeReactProvider>
+                        <PrimeReactProvider>{children}</PrimeReactProvider>
                     </StoreProvider>
                 </main>
             </body>

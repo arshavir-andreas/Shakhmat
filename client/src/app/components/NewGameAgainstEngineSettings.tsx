@@ -7,12 +7,18 @@ import Image from 'next/image';
 import { Button } from 'primereact/button';
 import { useAppSelector, useAppDispatch } from '../store';
 import { RootState } from '../store';
-import { setEngineELO, setTheUserColor, startTheGame } from '../store/againstEngineGameSlice';
+import {
+    setEngineELO,
+    setTheUserColor,
+    startTheGame,
+} from '../store/againstEngineGameSlice';
 
 export default function NewGameAgainstEngineSettings() {
     const [userColorChoice, setUserColorChoice] = useState('random');
 
-    const engineELO = useAppSelector((state: RootState)=> state.againstEngineGameSlice.engineELO);
+    const engineELO = useAppSelector(
+        (state: RootState) => state.againstEngineGameSlice.engineELO,
+    );
 
     const dispatch = useAppDispatch();
 
@@ -25,7 +31,7 @@ export default function NewGameAgainstEngineSettings() {
             colorChoice = Math.random() <= 0.5 ? 'white' : 'black';
         }
 
-        dispatch(setTheUserColor(colorChoice as ('white' | 'black')));
+        dispatch(setTheUserColor(colorChoice as 'white' | 'black'));
 
         dispatch(startTheGame());
     }
@@ -43,7 +49,9 @@ export default function NewGameAgainstEngineSettings() {
                 <InputNumber
                     inputId="engine-elo"
                     value={engineELO}
-                    onValueChange={(e) => dispatch(setEngineELO(Number(e.value)))}
+                    onValueChange={(e) =>
+                        dispatch(setEngineELO(Number(e.value)))
+                    }
                     max={3300}
                     min={1000}
                 />

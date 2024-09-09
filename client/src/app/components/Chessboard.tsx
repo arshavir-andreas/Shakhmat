@@ -5,11 +5,17 @@ import { InputText } from 'primereact/inputtext';
 import { useEffect, useState } from 'react';
 
 export default function Chessboard() {
-    const isTheUserWhite = useAppSelector((state: RootState) => state.againstEngineGameSlice.isTheUserWhite);
+    const isTheUserWhite = useAppSelector(
+        (state: RootState) => state.againstEngineGameSlice.isTheUserWhite,
+    );
 
-    const engineElO = useAppSelector((state: RootState) => state.againstEngineGameSlice.engineELO);
+    const engineElO = useAppSelector(
+        (state: RootState) => state.againstEngineGameSlice.engineELO,
+    );
 
-    const isTheGameReady = useAppSelector((state: RootState) => state.againstEngineGameSlice.isTheGameReady);
+    const isTheGameReady = useAppSelector(
+        (state: RootState) => state.againstEngineGameSlice.isTheGameReady,
+    );
 
     const [isWhiteTurn, setIsWhiteTurn] = useState(true);
 
@@ -34,25 +40,25 @@ export default function Chessboard() {
                 />
             </div>
 
-
             <div className=" font-bold text-[18px]">
                 {isTheGameReady ? `User` : ''}
             </div>
 
-            {
-                isTheGameReady ? (
-                    <div>
-                        <label htmlFor="user-move">Move: </label>
+            {isTheGameReady ? (
+                <div>
+                    <label htmlFor="user-move">Move: </label>
 
-                        <InputText
-                            id="user-move"
-                            disabled={(isTheUserWhite && !isWhiteTurn) || (!isTheUserWhite && isWhiteTurn)} 
-                        />
-                    </div>
-                ) : (
-                    <></>
-                )
-            }            
+                    <InputText
+                        id="user-move"
+                        disabled={
+                            (isTheUserWhite && !isWhiteTurn) ||
+                            (!isTheUserWhite && isWhiteTurn)
+                        }
+                    />
+                </div>
+            ) : (
+                <></>
+            )}
         </div>
     );
 }

@@ -16,4 +16,4 @@ const colorChoices: ColorChoice[] = [
     },
 ];
 
-export { colorChoices, };
+export { colorChoices };

@@ -1,4 +1,5 @@
 'use client';
+
 import { useRef } from 'react';
 import { Provider } from 'react-redux';
 import { AppStore, store } from '.';
@@ -14,7 +15,5 @@ export default function StoreProvider({
         storeRef.current = store;
     }
 
-    return (
-        <Provider store={storeRef.current}>{children}</Provider>
-    );
+    return <Provider store={storeRef.current}>{children}</Provider>;
 }

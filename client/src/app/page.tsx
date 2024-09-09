@@ -10,7 +10,9 @@ import { RootState, useAppSelector } from './store';
 export default function Home() {
     const [visible, setVisible] = useState(false);
 
-    const isTheGameReady = useAppSelector((state: RootState) => state.againstEngineGameSlice.isTheGameReady);
+    const isTheGameReady = useAppSelector(
+        (state: RootState) => state.againstEngineGameSlice.isTheGameReady,
+    );
 
     return (
         <div className="flex justify-center items-center min-h-screen px-4">
