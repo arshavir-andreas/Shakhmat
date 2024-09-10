@@ -14,6 +14,7 @@ import { fetcherIncludingCredentials } from '../utils/axios-fetchers';
 import { Chess } from 'chess.js';
 import { Button } from 'primereact/button';
 import FinishedGamePopUp from './FinishedGamePopUp';
+import { Toast } from 'primereact/toast';
 
 export default function Chessboard() {
     const isTheUserWhite = useAppSelector(
@@ -31,7 +32,7 @@ export default function Chessboard() {
     const [isWhiteTurn, setIsWhiteTurn] = useState(true);
 
     const game = useMemo(() => {
-        return new Chess('8/8/8/1k6/8/8/8/3K4 w - - 0 1');
+        return new Chess();
     }, []);
 
     const [gamePosition, setGamePosition] = useState(game.fen());
@@ -54,6 +55,8 @@ export default function Chessboard() {
             finishedGameStatus !== undefined
         );
     }, [finishedGameStatus, isTheUserWhite, isWhiteTurn]);
+
+    const userMoveErrorToast = useRef<Toast>(null!);
 
     const checkGameStatus = useCallback(() => {
         if (game.isCheckmate()) {
@@ -149,7 +152,12 @@ export default function Chessboard() {
                 setIsWhiteTurn(true);
             }
         } catch (error) {
-            console.log((error as Error).message);
+            userMoveErrorToast.current.show({
+                severity: 'error',
+                summary: 'Input error',
+                detail: `Invalid move "${userMove}"!`,
+                life: 2500,
+            });
         }
     }
 
@@ -224,6 +232,11 @@ export default function Chessboard() {
             ) : (
                 <></>
             )}
+
+            <Toast
+                ref={userMoveErrorToast}
+                position="center"
+            />
         </div>
     );
 }
