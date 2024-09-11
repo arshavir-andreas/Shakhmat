@@ -1,0 +1,38 @@
+services:
+    server:
+        container_name: server
+        image: mcr.microsoft.com/dotnet/sdk:8.0
+        working_dir: /usr/src/shakhmat/server
+        command: sh -c "dotnet restore && dotnet run"
+        environment:
+            - ASPNETCORE_HTTP_PORTS=5050
+        ports:
+            - 5050:5050
+        volumes:
+            - ./server:/usr/src/shakhmat/server
+        networks:
+            - api_network
+        stdin_open: true
+        tty: true
+        restart: always
+    
+    client:
+        container_name: client
+        image: oven/bun:alpine
+        working_dir: /usr/src/shakhmat/client
+        command: sh -c "bun --bun run dev"
+        depends_on:
+            - server
+        ports:
+            - 3000:3000
+        volumes:
+            - ./client:/usr/src/shakhmat/client
+        networks:
+            - api_network
+        stdin_open: true
+        tty: true
+        restart: always
+
+networks:
+    api_network:
+        name: api_network
