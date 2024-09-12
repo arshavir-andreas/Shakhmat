@@ -2,6 +2,9 @@
 
 A new pedagogical way to improve chess skills.
 
+[preview.webm](https://github.com/user-attachments/assets/5a50ab63-64f9-4f35-be49-6e7fda61cd3c)
+
+
 # Table of contents
 
 - [Why Shakhmat?](#why-shakhmat)
