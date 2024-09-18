@@ -44,7 +44,7 @@ export default function Home() {
                         <NewGameAgainstEngineSettings />
                     </Dialog>
 
-                    <div className=" flex gap-[30px]">
+                    <div className=" flex flex-col sm:flex-row gap-[30px]">
                         <Chessboard />
 
                         <PgnMovesHistory />
