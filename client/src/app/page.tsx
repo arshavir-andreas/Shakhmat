@@ -6,6 +6,7 @@ import { Dialog } from 'primereact/dialog';
 import NewGameAgainstEngineSettings from './components/NewGameAgainstEngineSettings';
 import Chessboard from './components/Chessboard';
 import { RootState, useAppSelector } from './store';
+import PgnMovesHistory from './components/PgnMovesHistory';
 
 export default function Home() {
     const [visible, setVisible] = useState(false);
@@ -43,7 +44,11 @@ export default function Home() {
                         <NewGameAgainstEngineSettings />
                     </Dialog>
 
-                    <Chessboard />
+                    <div className=" flex gap-[30px]">
+                        <Chessboard />
+
+                        <PgnMovesHistory />
+                    </div>
                 </div>
             </div>
         </div>

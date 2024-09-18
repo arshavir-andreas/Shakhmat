@@ -1,5 +1,5 @@
 import { Chessboard as ReactChessboard } from 'react-chessboard';
-import { useAppSelector } from '../store';
+import { useAppDispatch, useAppSelector } from '../store';
 import { RootState } from '../store';
 import { InputText } from 'primereact/inputtext';
 import {
@@ -15,6 +15,7 @@ import { Chess } from 'chess.js';
 import { Button } from 'primereact/button';
 import FinishedGamePopUp from './FinishedGamePopUp';
 import { Toast } from 'primereact/toast';
+import { setGamePGN } from '../store/againstEngineGameSlice';
 
 export default function Chessboard() {
     const isTheUserWhite = useAppSelector(
@@ -28,6 +29,8 @@ export default function Chessboard() {
     const isTheGameReady = useAppSelector(
         (state: RootState) => state.againstEngineGameSlice.isTheGameReady,
     );
+
+    const dispatch = useAppDispatch();
 
     const [isWhiteTurn, setIsWhiteTurn] = useState(true);
 
@@ -94,6 +97,8 @@ export default function Chessboard() {
 
             setGamePosition(game.fen());
 
+            dispatch(setGamePGN(game.pgn()));
+
             checkGameStatus();
         }
 
@@ -114,14 +119,7 @@ export default function Chessboard() {
                 setIsWhiteTurn(true);
             }
         }
-    }, [
-        checkGameStatus,
-        engineElO,
-        finishedGameStatus,
-        game,
-        isTheUserWhite,
-        isWhiteTurn,
-    ]);
+    }, [checkGameStatus, dispatch, engineElO, finishedGameStatus, game, isTheUserWhite, isWhiteTurn]);
 
     useEffect(() => {
         if (isTheGameReady && userMoveInputRef.current !== null) {
@@ -143,6 +141,8 @@ export default function Chessboard() {
             setUserMove('');
 
             setGamePosition(game.fen());
+
+            dispatch(setGamePGN(game.pgn()));
 
             checkGameStatus();
 

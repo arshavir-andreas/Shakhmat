@@ -5,12 +5,14 @@ export interface AgainstEngineGameState {
     isTheGameReady: boolean;
     engineELO: number;
     isTheUserWhite: boolean;
+    gamePGN: string;
 }
 
 const initialState: AgainstEngineGameState = {
     isTheGameReady: false,
     engineELO: 0,
     isTheUserWhite: true,
+    gamePGN: '',
 };
 
 export const againstEngineGameSlice = createSlice({
@@ -26,10 +28,13 @@ export const againstEngineGameSlice = createSlice({
         startTheGame: (state) => {
             state.isTheGameReady = true;
         },
+        setGamePGN: (state, action: PayloadAction<string>) => {
+            state.gamePGN = action.payload;
+        },
     },
 });
 
-export const { setEngineELO, setTheUserColor, startTheGame } =
+export const { setEngineELO, setTheUserColor, startTheGame, setGamePGN, } =
     againstEngineGameSlice.actions;
 
 export default againstEngineGameSlice.reducer;
