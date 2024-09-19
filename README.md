@@ -72,6 +72,7 @@ git clone https://github.com/arshavir-andreas/Shakhmat
 cd Shakhmat
 docker compose -f ./docker-compose.dev.yml up
 ```
+Then, open [**http://localhost:3000**](http://localhost:3000) in your favorite browser.
 
 ## License
 
