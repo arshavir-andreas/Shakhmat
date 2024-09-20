@@ -1,0 +1,18 @@
+SET SERVEROUTPUT ON;
+
+DECLARE
+    user_count NUMBER;
+BEGIN
+    SELECT COUNT(*) INTO user_count
+    FROM dba_users
+    WHERE UPPER(username) = UPPER('shakhmat');
+    
+    IF user_count = 0 THEN
+        EXECUTE IMMEDIATE 'CREATE USER shakhmat IDENTIFIED BY UkcREWFel0jWpbnA';
+        EXECUTE IMMEDIATE 'GRANT CONNECT, RESOURCE TO shakhmat';
+        EXECUTE IMMEDIATE 'GRANT DBA TO shakhmat';
+        EXECUTE IMMEDIATE 'GRANT CREATE TABLE TO shakhmat';
+        EXECUTE IMMEDIATE 'GRANT UNLIMITED TABLESPACE TO shakhmat';
+    END IF;
+END;
+/
