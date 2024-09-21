@@ -17,7 +17,7 @@ export default function Home() {
 
     return (
         <div className="flex justify-center items-center min-h-screen px-4">
-            <div className="w-full max-w-4xl">
+            <div className="max-w-4xl">
                 <div>
                     {!isTheGameReady ? (
                         <Button

@@ -18,3 +18,8 @@ type EngineResponse = {
 type FinishedGameStatus = {
     winner: 'white' | 'black' | undefined;
 };
+
+type ErrorDetails = {
+    statusCode: number,
+    message: string,
+};
