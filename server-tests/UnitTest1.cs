@@ -4,7 +4,7 @@ namespace Tests {
     public class UnitTest1 {
         [Fact]
         public async Task OracleDatabaseConnectionShouldBeSuccessful() {
-            string connectionString = "User Id=shakhmat; Password=UkcREWFel0jWpbnA; Data Source=localhost:1521; ";
+            string connectionString = "User Id=shakhmat; Password=UkcREWFel0jWpbnA; Data Source=localhost:1521; Persist Security Info=True; Pooling=True; ";
 
             using var conn = new OracleConnection(connectionString);
 
@@ -15,7 +15,7 @@ namespace Tests {
 
         [Fact]
         public async Task UsersTableShouldExist() {
-            string connectionString = "User Id=shakhmat; Password=UkcREWFel0jWpbnA; Data Source=localhost:1521; ";
+            string connectionString = "User Id=shakhmat; Password=UkcREWFel0jWpbnA; Data Source=localhost:1521; Persist Security Info=True; Pooling=True; ";
 
             using var conn = new OracleConnection(connectionString);
 
