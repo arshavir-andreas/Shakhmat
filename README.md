@@ -4,7 +4,6 @@ A new pedagogical way to improve chess skills.
 
 [preview.webm](https://github.com/user-attachments/assets/5a50ab63-64f9-4f35-be49-6e7fda61cd3c)
 
-
 # Table of contents
 
 - [Why Shakhmat?](#why-shakhmat)
@@ -72,7 +71,16 @@ git clone https://github.com/arshavir-andreas/Shakhmat
 cd Shakhmat
 docker compose -f ./docker-compose.dev.yml up
 ```
-Then, open [**http://localhost:3000**](http://localhost:3000) in your favorite browser.
+
+Wait for the Oracle CLI displaying: "*oracle_db  | Database mounted.*".
+
+Then, open a new terminal and launch this command:
+
+```bash
+sh ./oracle-db.init.sh <your-oracle-db-SYSTEM-user-password>
+```
+
+Finally, open [**http://localhost:3000**](http://localhost:3000) in your favorite browser.
 
 ## License
 
