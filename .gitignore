@@ -297,3 +297,5 @@ next-env.d.ts
 .vscode/
 
 games.pgn
+
+stockfish-x86-64

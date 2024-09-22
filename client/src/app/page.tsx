@@ -5,15 +5,16 @@ import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import NewGameAgainstEngineSettings from './components/NewGameAgainstEngineSettings';
 import Chessboard from './components/Chessboard';
-import { RootState, useAppDispatch, useAppSelector } from './store';
+import { RootState, useAppSelector } from './store';
 import PgnMovesHistory from './components/PgnMovesHistory';
 import { AxiosError } from 'axios';
 import { fetcherIncludingCredentials } from './utils/axios-fetchers';
-import { setUserCredentials } from './store/userSlice';
 import { useRouter } from 'next/navigation';
 
 export default function Home() {
     const router = useRouter();
+
+    const [engines, setEngines] = useState<Engine[]>([]);
 
     const [visible, setVisible] = useState(false);
 
@@ -21,15 +22,13 @@ export default function Home() {
         (state: RootState) => state.againstEngineGameSlice.isTheGameReady,
     );
 
-    const dispatch = useAppDispatch();
-
     async function handleNewGameSettings() {
         try {
             const { data } = (await fetcherIncludingCredentials.get(
-                `/user-credentials`,
-            )) as { data: UserCredentials };
+                `/engines`,
+            )) as { data: Engine[] };
 
-            dispatch(setUserCredentials(data));
+            setEngines(data);
 
             setVisible(true);
         } catch (error) {
@@ -43,7 +42,7 @@ export default function Home() {
                     break;
                 default:
                     console.log(axiosError);
-                    
+
                     break;
             }
         } finally {
@@ -76,7 +75,7 @@ export default function Home() {
                             setVisible(false);
                         }}
                     >
-                        <NewGameAgainstEngineSettings />
+                        <NewGameAgainstEngineSettings engines={engines} />
                     </Dialog>
 
                     <div className=" flex flex-col sm:flex-row gap-[30px]">

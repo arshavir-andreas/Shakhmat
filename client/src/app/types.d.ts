@@ -28,3 +28,10 @@ type UserCredentials = {
     id: string;
     username: string;
 };
+
+type Engine = {
+    id: string;
+    name: string;
+    minELO: number;
+    maxELO: number;
+};

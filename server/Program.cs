@@ -22,11 +22,12 @@ builder.Services.AddCors(options => {
 });
 
 var userRepository = new UserRepository(connectionString);
+var engineRepository = new EngineRepository(connectionString);
 
 builder.Services.AddSingleton(userRepository);
 
 builder.Services.AddSingleton(new UserService(userRepository: userRepository));
-builder.Services.AddSingleton(new EngineMovesService());
+builder.Services.AddSingleton(new EngineService(engineRepository));
 
 var app = builder.Build();
 
@@ -53,8 +54,8 @@ apiV1.MapGroup("/user-credentials")
     .WithMetadata(new ProtectedRouteMetadata())
     .WithTags("User credentials API v1");
 
-apiV1.MapGroup("/engines/arasan/")
-    .MapEngineMovesEndpoints()
+apiV1.MapGroup("/engines")
+    .MapEngineEndpoints()
     .WithMetadata(new ProtectedRouteMetadata())
     .WithTags("Engine moves API v1");
 

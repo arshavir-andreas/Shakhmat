@@ -1,8 +1,15 @@
 using System.Diagnostics;
 using Server.Data.Entities;
+using Server.Repositories;
 
 namespace Server.Services {
-    public class EngineMovesService {
+    public class EngineService(EngineRepository engineRepository) {
+        private readonly EngineRepository _engineRepository = engineRepository;
+        
+        public async Task<List<Engine>> GetEngines() {
+            return await _engineRepository.GetEngines();
+        }
+
         private static EngineResponse FormatEngineResponse(string bestMove) {
             return new EngineResponse {
                 From = bestMove[..2],
