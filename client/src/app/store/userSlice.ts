@@ -13,7 +13,7 @@ const initialState: UserState = {
 };
 
 export const userSlice = createSlice({
-    name: 'againstEngineGame',
+    name: 'user',
     initialState,
     reducers: {
         setUserCredentials: (state, action: PayloadAction<UserCredentials>) => {
