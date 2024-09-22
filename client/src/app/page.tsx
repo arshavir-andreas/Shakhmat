@@ -4,12 +4,11 @@ import { useState } from 'react';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import NewGameAgainstEngineSettings from './components/NewGameAgainstEngineSettings';
-import Chessboard from './components/Chessboard';
 import { RootState, useAppSelector } from './store';
-import PgnMovesHistory from './components/PgnMovesHistory';
 import { AxiosError } from 'axios';
 import { fetcherIncludingCredentials } from './utils/axios-fetchers';
 import { useRouter } from 'next/navigation';
+import { Chessboard } from 'react-chessboard';
 
 export default function Home() {
     const router = useRouter();
@@ -79,9 +78,16 @@ export default function Home() {
                     </Dialog>
 
                     <div className=" flex flex-col sm:flex-row gap-[30px]">
-                        <Chessboard />
-
-                        <PgnMovesHistory />
+                        <div className=" w-[300px] sm:w-[650px] my-[10px]">
+                            <Chessboard
+                                showBoardNotation={false}
+                                boardOrientation={`white`}
+                                arePiecesDraggable={false}
+                                areArrowsAllowed={false}
+                                autoPromoteToQueen={false}
+                                showPromotionDialog={false}
+                            />
+                        </div>
                     </div>
                 </div>
             </div>

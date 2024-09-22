@@ -1,6 +1,4 @@
 import { Chessboard as ReactChessboard } from 'react-chessboard';
-import { useAppDispatch, useAppSelector } from '../store';
-import { RootState } from '../store';
 import { InputText } from 'primereact/inputtext';
 import {
     FormEvent,
@@ -15,32 +13,30 @@ import { Chess } from 'chess.js';
 import { Button } from 'primereact/button';
 import FinishedGamePopUp from './FinishedGamePopUp';
 import { Toast } from 'primereact/toast';
-import { setGamePGN } from '../store/againstEngineGameSlice';
 import { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
+import { useAppDispatch } from '../store';
+import { setGamePGN } from '../store/againstEngineGameSlice';
 
-export default function Chessboard() {
+type ChessboardProps = {
+    engine: EngineDetails;
+    pgn: string;
+};
+
+export default function Chessboard({ engine, pgn }: ChessboardProps) {
     const router = useRouter();
-
-    const isTheUserWhite = useAppSelector(
-        (state: RootState) => state.againstEngineGameSlice.isTheUserWhite,
-    );
-
-    const engineElO = useAppSelector(
-        (state: RootState) => state.againstEngineGameSlice.engineELO,
-    );
-
-    const isTheGameReady = useAppSelector(
-        (state: RootState) => state.againstEngineGameSlice.isTheGameReady,
-    );
 
     const dispatch = useAppDispatch();
 
     const [isWhiteTurn, setIsWhiteTurn] = useState(true);
 
     const game = useMemo(() => {
-        return new Chess();
-    }, []);
+        const newGame = new Chess();
+
+        newGame.loadPgn(pgn);
+
+        return newGame;
+    }, [pgn]);
 
     const [gamePosition, setGamePosition] = useState(game.fen());
 
@@ -57,11 +53,11 @@ export default function Chessboard() {
 
     const isUserMoveInputDisabled = useMemo(() => {
         return (
-            (isTheUserWhite && !isWhiteTurn) ||
-            (!isTheUserWhite && isWhiteTurn) ||
+            (!engine.isWhite && !isWhiteTurn) ||
+            (engine.isWhite && isWhiteTurn) ||
             finishedGameStatus !== undefined
         );
-    }, [finishedGameStatus, isTheUserWhite, isWhiteTurn]);
+    }, [finishedGameStatus, engine.isWhite, isWhiteTurn]);
 
     const userMoveErrorToast = useRef<Toast>(null!);
 
@@ -86,13 +82,13 @@ export default function Chessboard() {
     useEffect(() => {
         async function getEngineBestMove() {
             const positionToEvaluate: PositionToEvaluate = {
-                engineELO: engineElO,
+                engineELO: engine.ELO,
                 fenPosition: game.fen(),
             };
 
             try {
                 const { data } = (await fetcherIncludingCredentials.post(
-                    `/engines/arasan/best-move`,
+                    `/engines/best-move`,
                     {
                         ...positionToEvaluate,
                     },
@@ -127,13 +123,13 @@ export default function Chessboard() {
             return;
         }
 
-        if (isWhiteTurn && !isTheUserWhite) {
+        if (isWhiteTurn && engine.isWhite) {
             getEngineBestMove();
 
             if (finishedGameStatus === undefined) {
                 setIsWhiteTurn(false);
             }
-        } else if (!isWhiteTurn && isTheUserWhite) {
+        } else if (!isWhiteTurn && !engine.isWhite) {
             getEngineBestMove();
 
             if (finishedGameStatus === undefined) {
@@ -143,24 +139,24 @@ export default function Chessboard() {
     }, [
         checkGameStatus,
         dispatch,
-        engineElO,
+        engine.ELO,
         finishedGameStatus,
         game,
-        isTheUserWhite,
+        engine.isWhite,
         isWhiteTurn,
         router,
     ]);
 
     useEffect(() => {
-        if (isTheGameReady && userMoveInputRef.current !== null) {
+        if (userMoveInputRef.current !== null) {
             if (
-                (isTheUserWhite && isWhiteTurn) ||
-                (!isTheUserWhite && !isWhiteTurn)
+                (!engine.isWhite && isWhiteTurn) ||
+                (engine.isWhite && !isWhiteTurn)
             ) {
                 userMoveInputRef.current.focus();
             }
         }
-    }, [isTheGameReady, isTheUserWhite, isWhiteTurn]);
+    }, [engine.isWhite, isWhiteTurn]);
 
     function handleUserMove(e: FormEvent) {
         e.preventDefault();
@@ -176,9 +172,9 @@ export default function Chessboard() {
 
             checkGameStatus();
 
-            if (isTheUserWhite && isWhiteTurn) {
+            if (!engine.isWhite && isWhiteTurn) {
                 setIsWhiteTurn(false);
-            } else if (!isTheUserWhite && !isWhiteTurn) {
+            } else if (engine.isWhite && !isWhiteTurn) {
                 setIsWhiteTurn(true);
             }
         } catch (error) {
@@ -200,25 +196,21 @@ export default function Chessboard() {
             />
 
             <div className=" font-bold text-[18px]">
-                {isTheGameReady ? (
-                    <span>
-                        Engine {engineElO}{' '}
-                        {((isWhiteTurn && !isTheUserWhite) ||
-                            (!isWhiteTurn && isTheUserWhite)) &&
-                        finishedGameStatus === undefined
-                            ? `(Thinking...)`
-                            : ``}
-                    </span>
-                ) : (
-                    <></>
-                )}
+                <span>
+                    {engine.name} {`(${engine.ELO} ELO)`}{' '}
+                    {((isWhiteTurn && engine.isWhite) ||
+                        (!isWhiteTurn && !engine.isWhite)) &&
+                    finishedGameStatus === undefined
+                        ? `(Thinking...)`
+                        : ``}
+                </span>
             </div>
 
             <div className=" w-[300px] sm:w-[650px] my-[10px]">
                 <ReactChessboard
                     position={gamePosition}
                     showBoardNotation={false}
-                    boardOrientation={isTheUserWhite ? `white` : `black`}
+                    boardOrientation={!engine.isWhite ? `white` : `black`}
                     arePiecesDraggable={false}
                     areArrowsAllowed={false}
                     autoPromoteToQueen={false}
@@ -226,42 +218,36 @@ export default function Chessboard() {
                 />
             </div>
 
-            <div className=" font-bold text-[18px]">
-                {isTheGameReady ? `User` : ''}
-            </div>
+            <div className=" font-bold text-[18px]">User</div>
 
-            {isTheGameReady ? (
-                <form
-                    onSubmit={handleUserMove}
-                    className=" flex items-center mt-[10px]"
+            <form
+                onSubmit={handleUserMove}
+                className=" flex items-center mt-[10px]"
+            >
+                <label
+                    htmlFor="user-move"
+                    className=" mr-[10px]"
                 >
-                    <label
-                        htmlFor="user-move"
-                        className=" mr-[10px]"
-                    >
-                        Move:
-                    </label>
+                    Move:
+                </label>
 
-                    <InputText
-                        id="user-move"
-                        ref={userMoveInputRef}
-                        value={userMove}
-                        onChange={(e) => setUserMove(e.target.value)}
-                        disabled={isUserMoveInputDisabled}
-                        className="w-[200px] sm:w-[400px]"
-                    />
+                <InputText
+                    id="user-move"
+                    ref={userMoveInputRef}
+                    value={userMove}
+                    onChange={(e) => setUserMove(e.target.value)}
+                    disabled={isUserMoveInputDisabled}
+                    className="w-[200px] sm:w-[400px]"
+                />
 
-                    <Button
-                        type="submit"
-                        className=" ml-[10px]"
-                        disabled={isUserMoveInputDisabled}
-                    >
-                        Go
-                    </Button>
-                </form>
-            ) : (
-                <></>
-            )}
+                <Button
+                    type="submit"
+                    className=" ml-[10px]"
+                    disabled={isUserMoveInputDisabled}
+                >
+                    Go
+                </Button>
+            </form>
 
             <Toast
                 ref={userMoveErrorToast}

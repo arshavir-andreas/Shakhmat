@@ -6,6 +6,8 @@ import { RadioButton } from 'primereact/radiobutton';
 import Image from 'next/image';
 import { Button } from 'primereact/button';
 import { Dropdown } from 'primereact/dropdown';
+import { useRouter } from 'next/navigation';
+import { fetcherIncludingCredentials } from '../utils/axios-fetchers';
 
 type NewGameAgainstEngineSettingsProps = {
     engines: Engine[];
@@ -14,6 +16,8 @@ type NewGameAgainstEngineSettingsProps = {
 export default function NewGameAgainstEngineSettings({
     engines,
 }: NewGameAgainstEngineSettingsProps) {
+    const router = useRouter();
+
     const [engine, setEngine] = useState<Engine | undefined>(undefined);
 
     const [engineELO, setEngineELO] = useState(0);
@@ -42,18 +46,30 @@ export default function NewGameAgainstEngineSettings({
         setEngineELO(newEngine.minELO);
     }
 
-    function handleSubmit(e: FormEvent) {
+    async function handleSubmit(e: FormEvent) {
         e.preventDefault();
 
-        // let colorChoice = userColorChoice;
+        let isTheEngineWhite = false;
 
-        // if (userColorChoice === 'random') {
-        //     colorChoice = Math.random() <= 0.5 ? 'white' : 'black';
-        // }
+        if (userColorChoice === 'random') {
+            isTheEngineWhite = Math.random() <= 0.5;
+        } else if (userColorChoice === 'black') {
+            isTheEngineWhite = true;
+        }
 
-        // dispatch(setTheUserColor(colorChoice as 'white' | 'black'));
+        try {
+            const { data } = await fetcherIncludingCredentials.post(`/engines/new-game`, {
+                engineId: engine!.id,
+                isTheEngineWhite,
+                engineELO,
+            }) as { data: string };
 
-        // dispatch(startTheGame());
+            router.push(`/games/${data}`);
+        } catch (error) {
+            console.log(error);
+        } finally {
+
+        }
     }
 
     return (

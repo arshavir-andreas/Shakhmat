@@ -35,3 +35,15 @@ type Engine = {
     minELO: number;
     maxELO: number;
 };
+
+type EngineDetails = {
+    id: string;
+    name: string;
+    ELO: number;
+    isWhite: boolean;
+};
+
+type GameAgainstEngine = {
+    engine: EngineDetails;
+    PGN: string;
+};

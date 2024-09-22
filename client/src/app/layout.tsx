@@ -5,6 +5,7 @@ import { PrimeReactProvider } from 'primereact/api';
 import 'primereact/resources/themes/lara-light-green/theme.css';
 
 import StoreProvider from './store/StoreProvider';
+import ReactQueryClientProvider from './components/ReactQueryClientProvider';
 
 const geistSans = localFont({
     src: './fonts/GeistVF.woff',
@@ -29,16 +30,18 @@ export default function RootLayout({
     children: React.ReactNode;
 }>) {
     return (
-        <html lang="en">
-            <body
-                className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-            >
-                <main>
-                    <StoreProvider>
-                        <PrimeReactProvider>{children}</PrimeReactProvider>
-                    </StoreProvider>
-                </main>
-            </body>
-        </html>
+        <ReactQueryClientProvider>
+            <html lang="en">
+                <body
+                    className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+                >
+                    <main>
+                        <StoreProvider>
+                            <PrimeReactProvider>{children}</PrimeReactProvider>
+                        </StoreProvider>
+                    </main>
+                </body>
+            </html>
+        </ReactQueryClientProvider>
     );
 }

@@ -67,5 +67,18 @@ BEGIN
 
     insert_engine_if_not_exists(0, 'Arasan', 1000, 3450, 'arasan/arasanx-64');
     insert_engine_if_not_exists(1, 'Stockfish', 1320, 3190, 'stockfish/stockfish-x86-64');
+
+    create_table_if_not_exists('against_engine_games', q'[
+        id NUMBER(20) PRIMARY KEY,
+        pgn VARCHAR2(4000),
+        is_the_engine_white NUMBER(1, 0) NOT NULL,
+        engine_elo NUMBER(4) NOT NULL,
+        result VARCHAR2(7) DEFAULT '*' NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+        user_id NUMBER(20) NOT NULL,
+        engine_id NUMBER(20) NOT NULL,
+        FOREIGN KEY (engine_id) REFERENCES engines(id),
+        FOREIGN KEY (user_id) REFERENCES users(id)
+    ]');
 END;
 /

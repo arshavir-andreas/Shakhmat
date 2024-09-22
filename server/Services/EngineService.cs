@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Server.Data.Entities;
 using Server.Repositories;
+using Server.Utils;
 
 namespace Server.Services {
     public class EngineService(EngineRepository engineRepository) {
@@ -8,6 +9,34 @@ namespace Server.Services {
         
         public async Task<List<Engine>> GetEngines() {
             return await _engineRepository.GetEngines();
+        }
+
+        public async Task<long> PostAgainstEngineGame(NewAgainstEngineGame newAgainstEngineGame, long userId) {
+            var gameId = ID.GenerateID();
+
+            await _engineRepository.PostAgainstEngineGame(
+                id: gameId, 
+                isTheEngineWhite: Convert.ToInt32(newAgainstEngineGame.IsTheEngineWhite), 
+                engineELO: Convert.ToInt16(newAgainstEngineGame.EngineELO), 
+                engineId: Convert.ToInt64(newAgainstEngineGame.EngineId),
+                userId: userId
+            );
+
+            return gameId;
+        }
+
+        public async Task<AgainstEngineGame?> GetAgainstEngineGame(long gameId, long userId) {
+            var againstEngineGame = await _engineRepository.GetAgainstEngineGame(gameId: gameId);
+
+            if (againstEngineGame == null) {
+                return null;
+            }
+
+            if (againstEngineGame.UserId != userId) {
+                return null;
+            }
+
+            return againstEngineGame;
         }
 
         private static EngineResponse FormatEngineResponse(string bestMove) {

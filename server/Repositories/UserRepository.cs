@@ -99,7 +99,7 @@ namespace Server.Repositories {
             await conn.OpenAsync();
 
             using var cmd = new OracleCommand(@"
-                SELECT us.id, u.username
+                SELECT u.id, u.username
                 FROM users_sessions us
                 INNER JOIN users u ON us.user_id = u.id
                 WHERE us.id = :session_id
