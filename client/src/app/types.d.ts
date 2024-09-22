@@ -20,6 +20,11 @@ type FinishedGameStatus = {
 };
 
 type ErrorDetails = {
-    statusCode: number,
-    message: string,
+    statusCode: number;
+    message: string;
+};
+
+type UserCredentials = {
+    id: string;
+    username: string;
 };

@@ -1,4 +1,5 @@
 using Server.Data;
+using Server.Data.Entitie;
 using Server.Data.Entities;
 using Server.Repositories;
 using Server.Utils;
@@ -19,6 +20,28 @@ namespace Server.Services {
             var hashedPassword = Password.HashPassword(userToAdd.Password);
 
             await _userRepository.PostUser(id: id, username: userToAdd.Username, email: userToAdd.Email, hashedPassword: hashedPassword);
+        }
+
+        public async Task<UserCredentials?> Login(LoginCredentials loginCredentials, int sessionDuration) {
+            var userDetails = await _userRepository.GetUserDetailsByUsernameOrEmail(loginCredentials.UsernameOrEmail);
+
+            if (userDetails == null) {
+                return null;
+            }
+
+            if (!Password.VerifyPassword(plainPassword: loginCredentials.Password, hashedPassword: userDetails.Password)) {
+                return null;
+            }
+
+            var sessionId = ID.GenerateID();
+
+            await _userRepository.PostUserSession(id: sessionId, duration: sessionDuration, userId: userDetails.Id);
+
+            return new UserCredentials {
+                Id = userDetails.Id.ToString(),
+                Username = userDetails.Username,
+                SessionId = sessionId.ToString(),
+            };
         }
     }
 }

@@ -26,7 +26,16 @@ BEGIN
         id NUMBER(20) PRIMARY KEY,
         username VARCHAR2(32) NOT NULL,
         email VARCHAR2(64) NOT NULL,
-        password VARCHAR2(255) NOT NULL
+        password VARCHAR2(255) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
+    ]');
+
+    create_table_if_not_exists('users_sessions', q'[
+        id NUMBER(20) PRIMARY KEY,
+        duration NUMBER(8) NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL,
+        user_id NUMBER(20) NOT NULL,
+        FOREIGN KEY (user_id) REFERENCES users(id)
     ]');
 END;
 /

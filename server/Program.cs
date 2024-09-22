@@ -2,6 +2,7 @@ using Server.Services;
 using Server.Middlewares;
 using Server.Endpoints;
 using Server.Repositories;
+using Server;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -41,12 +42,13 @@ app.UseMiddleware<ExceptionMiddleware>();
 
 var apiV1 = app.MapGroup("/api/v1");
 
-apiV1.MapGroup("/engines/arasan/")
-    .MapEngineMovesEndpoints()
-    .WithTags("Engine moves API v1");
-
 apiV1.MapGroup("/users")
     .MapUserEndpoints()
     .WithTags("Users API v1");
+
+apiV1.MapGroup("/engines/arasan/")
+    .AddEndpointFilter<AuthorizationFilter>()
+    .MapEngineMovesEndpoints()
+    .WithTags("Engine moves API v1");
 
 app.Run();

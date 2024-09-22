@@ -46,7 +46,7 @@ services:
             - 3000:3000
         volumes:
             - ./client:/usr/src/shakhmat/client
-            - /usr/src/shakhmat/client/node_modules/
+            # - /usr/src/shakhmat/client/node_modules/
             - /usr/src/shakhmat/client/.next/
         networks:
             - api_network
