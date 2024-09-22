@@ -93,13 +93,13 @@ namespace Server.Repositories {
             await cmd.ExecuteNonQueryAsync();
         }
 
-        public async Task<long?> GetUserIdBySessionId(long sessionId) {
+        public async Task<UserDetails?> GetUserDetailsBySessionId(long sessionId) {
             using var conn = new OracleConnection(_connectionString);
 
             await conn.OpenAsync();
 
             using var cmd = new OracleCommand(@"
-                SELECT us.id
+                SELECT us.id, u.username
                 FROM users_sessions us
                 INNER JOIN users u ON us.user_id = u.id
                 WHERE us.id = :session_id
@@ -111,7 +111,11 @@ namespace Server.Repositories {
             using var reader = await cmd.ExecuteReaderAsync();
 
             if (await reader.ReadAsync()) {
-                return Convert.ToInt64(reader["id"]);
+                return new UserDetails {
+                    Id = Convert.ToInt64(reader["id"]),
+                    Username = reader["username"].ToString()!,
+                    Password = "",
+                };
             }
 
             return null;

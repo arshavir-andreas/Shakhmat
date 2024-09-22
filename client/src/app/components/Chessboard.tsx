@@ -16,8 +16,12 @@ import { Button } from 'primereact/button';
 import FinishedGamePopUp from './FinishedGamePopUp';
 import { Toast } from 'primereact/toast';
 import { setGamePGN } from '../store/againstEngineGameSlice';
+import { AxiosError } from 'axios';
+import { useRouter } from 'next/navigation';
 
 export default function Chessboard() {
+    const router = useRouter();
+
     const isTheUserWhite = useAppSelector(
         (state: RootState) => state.againstEngineGameSlice.isTheUserWhite,
     );
@@ -86,20 +90,37 @@ export default function Chessboard() {
                 fenPosition: game.fen(),
             };
 
-            const { data } = (await fetcherIncludingCredentials.post(
-                `/engines/arasan/best-move`,
-                {
-                    ...positionToEvaluate,
-                },
-            )) as { data: EngineResponse };
+            try {
+                const { data } = (await fetcherIncludingCredentials.post(
+                    `/engines/arasan/best-move`,
+                    {
+                        ...positionToEvaluate,
+                    },
+                )) as { data: EngineResponse };
 
-            game.move({ ...data }, { strict: true });
+                game.move({ ...data }, { strict: true });
 
-            setGamePosition(game.fen());
+                setGamePosition(game.fen());
 
-            dispatch(setGamePGN(game.pgn()));
+                dispatch(setGamePGN(game.pgn()));
 
-            checkGameStatus();
+                checkGameStatus();
+            } catch (error) {
+                const axiosError = (error as AxiosError).response
+                    ?.data as ErrorDetails;
+
+                switch (axiosError.statusCode) {
+                    case 401:
+                        router.push(`/login`);
+
+                        break;
+                    default:
+                        console.log(axiosError);
+
+                        break;
+                }
+            } finally {
+            }
         }
 
         if (finishedGameStatus !== undefined) {
@@ -119,7 +140,16 @@ export default function Chessboard() {
                 setIsWhiteTurn(true);
             }
         }
-    }, [checkGameStatus, dispatch, engineElO, finishedGameStatus, game, isTheUserWhite, isWhiteTurn]);
+    }, [
+        checkGameStatus,
+        dispatch,
+        engineElO,
+        finishedGameStatus,
+        game,
+        isTheUserWhite,
+        isWhiteTurn,
+        router,
+    ]);
 
     useEffect(() => {
         if (isTheGameReady && userMoveInputRef.current !== null) {

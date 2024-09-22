@@ -9,6 +9,8 @@ import { FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { fetcherIncludingCredentials } from '../utils/axios-fetchers';
 import { AxiosError } from 'axios';
+import { useAppDispatch } from '../store';
+import { setUserCredentials } from '../store/userSlice';
 
 export default function Page() {
     const router = useRouter();
@@ -17,26 +19,31 @@ export default function Page() {
     const [password, setPassword] = useState('');
     const [errorMsg, setErrorMsg] = useState('');
 
+    const dispatch = useAppDispatch();
+
     async function handleLogin(e?: FormEvent) {
         if (e !== undefined) {
             e.preventDefault();
         }
 
         try {
-            const { data } = await fetcherIncludingCredentials.post(`/users/login`, {
-                usernameOrEmail,
-                password,
-            }) as { data: UserCredentials };
+            const { data } = (await fetcherIncludingCredentials.post(
+                `/users/login`,
+                {
+                    usernameOrEmail,
+                    password,
+                },
+            )) as { data: UserCredentials };
 
-            console.log(data);
+            dispatch(setUserCredentials(data));
 
-            // router.push(`/`);
+            router.push(`/`);
         } catch (error) {
-            const axiosError = (error as AxiosError).response?.data as ErrorDetails;
+            const axiosError = (error as AxiosError).response
+                ?.data as ErrorDetails;
 
             setErrorMsg(axiosError.message);
         } finally {
-
         }
     }
 
@@ -57,11 +64,19 @@ export default function Page() {
                 }
                 footer={
                     <div className=" flex justify-end gap-[20px]">
-                        <Button type="button" onClick={() => router.push(`/`)}>
+                        <Button
+                            type="button"
+                            onClick={() => router.push(`/`)}
+                        >
                             Return to home page
                         </Button>
 
-                        <Button type="submit" onClick={handleLogin}>Log in</Button>
+                        <Button
+                            type="submit"
+                            onClick={handleLogin}
+                        >
+                            Log in
+                        </Button>
                     </div>
                 }
             >
@@ -91,7 +106,10 @@ export default function Page() {
                         <label htmlFor="password">Password</label>
                     </FloatLabel>
 
-                    <Button type="submit" className=" hidden"></Button>
+                    <Button
+                        type="submit"
+                        className=" hidden"
+                    ></Button>
                 </form>
 
                 <p className=" text-[red]">{errorMsg}</p>
