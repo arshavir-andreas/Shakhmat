@@ -1,20 +1,22 @@
-name: Translate README
+name: Translate Readme
 
 on:
     push:
-        branches:
-            - main
+        branches: 
             - dev
+
 jobs:
-    build:
+    translate:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v2
-            - name: Setup Node.js
-              uses: actions/setup-node@v1
+            - name: Checkout
+              uses: actions/checkout@v3
               with:
-                  node-version: 12.x
-            - name: Adding README - French
-              uses: dephraiim/translate-readme@main
+                  fetch-depth: 3
+
+            - name: Auto Translate
+              uses: Lin-jun-xiang/action-translate-readme@v2
               with:
-                  LANG: fr
+                  token: ${{ secrets.Action_Bot }}
+                  g4f_provider: g4f.Provider.DeepAi
+                  langs: "French" 
