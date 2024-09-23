@@ -44,15 +44,17 @@ That web application is written in:
   - High performance, thanks to Server-Side Rendering.
 * ASP.NET Core Minimal API:
   - Very high performant and low-latency data retrievals and updates.
+* Oracle DB:
+  - High performant and scalable enterprise database.
 
 ## Todos
 
 * [X] ~~Chess engines ELO setting~~
 * [X] ~~PGN-notation-based user moves~~
-* [ ] PGN moves history
-* [ ] Chess engines choice
-* [ ] User account registering
-* [ ] User authentication and authorization
+* [X] ~~PGN moves history~~
+* [X] ~~Chess engines choice~~
+* [X] ~~User account registering~~
+* [X] ~~User authentication and authorization~~
 * [ ] PGN export
 * [ ] Real-time games against other human players
 
@@ -72,7 +74,7 @@ cd Shakhmat
 docker compose -f ./docker-compose.dev.yml up
 ```
 
-Wait for the Oracle CLI displaying: "*oracle_db  | Database mounted.*".
+Wait for the CLI displaying: "*dotnet watch 🚀 Started*".
 
 Then, open a new terminal and launch this command:
 
@@ -80,7 +82,7 @@ Then, open a new terminal and launch this command:
 sh ./oracle-db.init.sh <your-oracle-db-SYSTEM-user-password>
 ```
 
-Finally, open [**http://localhost:3000**](http://localhost:3000) in your favorite browser.
+Finally, open [**http://localhost:3000/sign-up**](http://localhost:3000/sign-up) in your favorite browser, and create your account.
 
 ## License
 

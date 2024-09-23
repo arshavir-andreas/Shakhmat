@@ -12,6 +12,14 @@ services:
             - oracle_db_data:/opt/oracle/oradata
         networks:
             - api_network
+        restart: always
+        healthcheck:
+            test: ["CMD", "healthcheck.sh"]
+            interval: 10s
+            timeout: 5s
+            retries: 10
+            start_period: 5s
+            start_interval: 5s
     server:
         container_name: server
         image: mcr.microsoft.com/dotnet/sdk:8.0
@@ -31,8 +39,12 @@ services:
         networks:
             - api_network
         stdin_open: true
-        tty: true
         restart: always
+        healthcheck:
+            test: ["CMD", "curl", "-f", "http://localhost:5050"]
+            interval: 30s
+            timeout: 10s
+            retries: 5
     
     client:
         container_name: client
@@ -51,7 +63,6 @@ services:
         networks:
             - api_network
         stdin_open: true
-        tty: true
         restart: always
 
 networks:
