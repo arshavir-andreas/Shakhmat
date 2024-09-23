@@ -11,6 +11,7 @@ import { fetcherIncludingCredentials } from '../utils/axios-fetchers';
 import { AxiosError } from 'axios';
 import { useAppDispatch } from '../store';
 import { setUserCredentials } from '../store/userSlice';
+import Link from 'next/link';
 
 export default function Page() {
     const router = useRouter();
@@ -63,13 +64,13 @@ export default function Page() {
                     </div>
                 }
                 footer={
-                    <div className=" flex justify-end gap-[20px]">
-                        <Button
-                            type="button"
-                            onClick={() => router.push(`/`)}
+                    <div className=" flex items-center justify-end gap-[20px]">
+                        <Link
+                            href={`/sign-up`}
+                            className=" underline text-blue-700"
                         >
-                            Return to home page
-                        </Button>
+                            Don&apos;t have an account yet? Sign up
+                        </Link>
 
                         <Button
                             type="submit"

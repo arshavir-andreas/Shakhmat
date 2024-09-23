@@ -9,6 +9,7 @@ import { FormEvent, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { fetcherIncludingCredentials } from '../utils/axios-fetchers';
 import { AxiosError } from 'axios';
+import Link from 'next/link';
 
 export default function Page() {
     const router = useRouter();
@@ -39,11 +40,11 @@ export default function Page() {
 
             router.push(`/`);
         } catch (error) {
-            const axiosError = (error as AxiosError).response?.data as ErrorDetails;
+            const axiosError = (error as AxiosError).response
+                ?.data as ErrorDetails;
 
             setErrorMsg(axiosError.message);
         } finally {
-
         }
     }
 
@@ -63,12 +64,20 @@ export default function Page() {
                     </div>
                 }
                 footer={
-                    <div className=" flex justify-end gap-[20px]">
-                        <Button type="button" onClick={() => router.push(`/`)}>
-                            Return to home page
-                        </Button>
+                    <div className=" flex items-center justify-end gap-[20px]">
+                        <Link
+                            href={`/login`}
+                            className=" underline text-blue-700"
+                        >
+                            Already have an account? Sign in
+                        </Link>
 
-                        <Button type="submit" onClick={handleAccountCreation}>Sign up</Button>
+                        <Button
+                            type="submit"
+                            onClick={handleAccountCreation}
+                        >
+                            Sign up
+                        </Button>
                     </div>
                 }
             >
@@ -125,7 +134,10 @@ export default function Page() {
                         </label>
                     </FloatLabel>
 
-                    <Button type="submit" className=" hidden"></Button>
+                    <Button
+                        type="submit"
+                        className=" hidden"
+                    ></Button>
                 </form>
 
                 <p className=" text-[red]">{errorMsg}</p>
