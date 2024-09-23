@@ -4,6 +4,10 @@ A new pedagogical way to improve chess skills.
 
 [preview.webm](https://github.com/user-attachments/assets/5a50ab63-64f9-4f35-be49-6e7fda61cd3c)
 
+
+* [English](https://github.com/arshavir-andreas/Shakhmat/blob/main/README.md)
+* [Français](https://github.com/arshavir-andreas/Shakhmat/blob/main/README.fr.md)
+
 # Table of contents
 
 - [Why Shakhmat?](#why-shakhmat)
