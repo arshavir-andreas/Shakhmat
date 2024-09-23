@@ -22,20 +22,29 @@ END;
 /
 
 CREATE OR REPLACE PROCEDURE insert_engine_if_not_exists(
-    input_id IN NUMBER, input_name IN VARCHAR2, input_min_elo IN NUMBER, input_max_elo IN NUMBER, input_binary_path IN VARCHAR2
+    input_id IN NUMBER, 
+    input_name IN VARCHAR2, 
+    input_min_elo IN NUMBER, 
+    input_max_elo IN NUMBER, 
+    input_binary_path IN VARCHAR2
 ) IS
+    v_count NUMBER;
 BEGIN
-    INSERT INTO engines (id, name, min_elo, max_elo, binary_path)
-    VALUES (input_id, input_name, input_min_elo, input_max_elo, input_binary_path);
+    SELECT COUNT(*) INTO v_count 
+    FROM engines 
+    WHERE id = input_id;
 
-    EXCEPTION
-        WHEN dup_val_on_index THEN
-            UPDATE engines SET 
-                name = input_name,
-                min_elo = input_min_elo,
-                max_elo = input_max_elo,
-                binary_path = input_binary_path
-            WHERE id = input_id;
+    IF v_count > 0 THEN
+        UPDATE engines
+        SET name = input_name,
+            min_elo = input_min_elo,
+            max_elo = input_max_elo,
+            binary_path = input_binary_path
+        WHERE id = input_id;
+    ELSE
+        INSERT INTO engines (id, name, min_elo, max_elo, binary_path)
+        VALUES (input_id, input_name, input_min_elo, input_max_elo, input_binary_path);
+    END IF;
 END;
 /
 
@@ -65,9 +74,6 @@ BEGIN
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL
     ]');
 
-    insert_engine_if_not_exists(0, 'Arasan', 1000, 3450, 'arasan/arasanx-64');
-    insert_engine_if_not_exists(1, 'Stockfish', 1320, 3190, 'stockfish/stockfish-x86-64');
-
     create_table_if_not_exists('against_engine_games', q'[
         id NUMBER(20) PRIMARY KEY,
         pgn VARCHAR2(4000),
@@ -80,5 +86,11 @@ BEGIN
         FOREIGN KEY (engine_id) REFERENCES engines(id),
         FOREIGN KEY (user_id) REFERENCES users(id)
     ]');
+END;
+/
+
+BEGIN
+    insert_engine_if_not_exists(0, 'Arasan', 1000, 3450, 'arasan/arasanx-64');
+    insert_engine_if_not_exists(1, 'Stockfish', 1320, 3190, 'stockfish/stockfish-x86-64');
 END;
 /
