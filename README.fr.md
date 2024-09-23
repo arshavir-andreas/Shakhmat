@@ -32,8 +32,6 @@ La maîtrise de la notation PGN présente certains avantages :
 3. Ils reconnaîtront et assimileront plus facilement les schémas tactiques.
 4. Leurs capacités de calcul seront améliorées.
 
-##### Interface utilisateur moderne et responsive :
-
 ![1726143997279](docs/mobile-version.png)
 
 ##### Gestion conviviale des erreurs :
