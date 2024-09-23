@@ -13,7 +13,7 @@ A new pedagogical way to improve chess skills.
 
 ## Why Shakhmat?
 
-As far as I know, a lot of chess players in my country (including me) are not really proficient at PGN notation. Even though chess plateforms like Chess.com or Lichess.org propose some ways to learn that notation, I personally found that was a bit awkward to master. That's the reason why Shakhmat was created: **why not just playing against a chess engine by using PGN notation from the very beginning until the end of a game**?
+As far as I know, a lot of chess players in my country (including me) are not really proficient at PGN notation. Even though chess platforms like Chess.com or Lichess.org propose some ways to learn that notation, I personally found that was a bit awkward to master. That's the reason why Shakhmat was created: **why not just playing against a chess engine by using PGN notation from the very beginning until the end of a game**?
 
 It is a didactic approach inspired by ***Blindfold chess***.
 
@@ -24,7 +24,7 @@ By playing regularly against chess engines by using Shakhmat, users will be prof
 PGN notation mastering has some advantages:
 
 1. They will learn openings more easily.
-2. It will be straighforward for them to memorize openings sidelines and variations.
+2. It will be straightforward for them to memorize openings sidelines and variations.
 3. They will recognize and assimilate tactical patterns easier.
 4. Their calculation abilities will be improved.
 
