@@ -20,6 +20,7 @@ services:
             retries: 10
             start_period: 5s
             start_interval: 5s
+
     server:
         container_name: server
         image: mcr.microsoft.com/dotnet/sdk:8.0
@@ -33,9 +34,7 @@ services:
         ports:
             - 5050:5050
         volumes:
-            - ./server:/usr/src/shakhmat/server
-            - /usr/src/shakhmat/server/bin/
-            - /usr/src/shakhmat/server/obj/
+            - server_data:/usr/src/shakhmat/server
         networks:
             - api_network
         stdin_open: true
@@ -45,6 +44,22 @@ services:
             interval: 30s
             timeout: 10s
             retries: 5
+
+    server_tests:
+        container_name: server_tests
+        image: mcr.microsoft.com/dotnet/sdk:8.0
+        working_dir: /usr/src/shakhmat/server-tests
+        command: sh -c "dotnet restore && trap \"\" INT; while [ true ]; do sleep 1; done;" # Run as a daemon
+        depends_on:
+            - oracle_db
+            - server
+        volumes:
+            - server_data:/usr/src/shakhmat/server
+            - ./server-tests:/usr/src/shakhmat/server-tests
+        networks:
+            - api_network
+        stdin_open: true
+        tty: true
     
     client:
         container_name: client
@@ -58,8 +73,6 @@ services:
             - 3000:3000
         volumes:
             - ./client:/usr/src/shakhmat/client
-            # - /usr/src/shakhmat/client/node_modules/
-            - /usr/src/shakhmat/client/.next/
         networks:
             - api_network
         stdin_open: true
@@ -71,3 +84,9 @@ networks:
 
 volumes:
     oracle_db_data:
+    server_data:
+        driver: local
+        driver_opts:
+            type: none
+            device: ./server
+            o: bind
