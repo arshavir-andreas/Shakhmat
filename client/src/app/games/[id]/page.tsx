@@ -43,7 +43,7 @@ export default function Page({ params }: { params: { id: string } }) {
 
     return (
         <div className=" flex flex-col sm:flex-row gap-[30px]">
-            <Chessboard 
+            <Chessboard
                 engine={gameDetails!.engine}
                 pgn={gameDetails!.PGN}
             />

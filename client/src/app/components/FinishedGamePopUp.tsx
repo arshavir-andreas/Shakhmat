@@ -39,7 +39,9 @@ export default function FinishedGamePopUp({
                     )}
                 </div>
 
-                <Button onClick={() => router.push(`/`)}>Go to home page</Button>
+                <Button onClick={() => router.push(`/`)}>
+                    Go to home page
+                </Button>
             </div>
         </Dialog>
     );
