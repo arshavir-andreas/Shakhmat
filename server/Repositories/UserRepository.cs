@@ -1,5 +1,4 @@
 using Oracle.ManagedDataAccess.Client;
-using Server.Data.Entitie;
 using Server.Data.Entities;
 
 namespace Server.Repositories {
