@@ -6,9 +6,14 @@ using Server.Utils;
 namespace Server.Services {
     public class EngineService(EngineRepository engineRepository) {
         private readonly EngineRepository _engineRepository = engineRepository;
+        private readonly List<Engine> engines = [];
         
         public async Task<List<Engine>> GetEngines() {
-            return await _engineRepository.GetEngines();
+            if (engines.Count == 0) {
+                return await _engineRepository.GetEngines();
+            }
+            
+            return engines;
         }
 
         public async Task<long> PostAgainstEngineGame(NewAgainstEngineGame newAgainstEngineGame, long userId) {
@@ -48,7 +53,15 @@ namespace Server.Services {
         }
 
         public async Task<EngineResponse?> GetBestMoveFromFenPosition(PositionToEvaluate positionToEvaluate) {
-            var enginePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "arasan/arasanx-64");
+            var engines = await GetEngines();
+
+            var engine = engines.FirstOrDefault((engine) => engine.Id == positionToEvaluate.EngineId);
+
+            if (engine == null) {
+                return null;
+            }
+            
+            var enginePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "engines", engine.BinaryPath!);
             
             using Process engineProcess = new();
             engineProcess.StartInfo.FileName = enginePath;
@@ -62,18 +75,16 @@ namespace Server.Services {
             await engineProcess.StandardInput.WriteLineAsync("uci");
             await engineProcess.StandardInput.FlushAsync();
 
-            if (positionToEvaluate.EngineELO != null) {
-                await engineProcess.StandardInput.WriteLineAsync("setoption name UCI_LimitStrength value true");
-                await engineProcess.StandardInput.FlushAsync();
+            await engineProcess.StandardInput.WriteLineAsync("setoption name UCI_LimitStrength value true");
+            await engineProcess.StandardInput.FlushAsync();
 
-                await engineProcess.StandardInput.WriteLineAsync($"setoption name UCI_Elo value {positionToEvaluate.EngineELO}");
-                await engineProcess.StandardInput.FlushAsync();
-            }
+            await engineProcess.StandardInput.WriteLineAsync($"setoption name UCI_Elo value {positionToEvaluate.EngineELO}");
+            await engineProcess.StandardInput.FlushAsync();
 
             await engineProcess.StandardInput.WriteLineAsync($"position fen {positionToEvaluate.FenPosition}");
             await engineProcess.StandardInput.FlushAsync();
 
-            await engineProcess.StandardInput.WriteLineAsync("go");
+            await engineProcess.StandardInput.WriteLineAsync("go movetime 1500");
             await engineProcess.StandardInput.FlushAsync();
 
             string bestMove = "";

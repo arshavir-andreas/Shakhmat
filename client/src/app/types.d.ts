@@ -5,7 +5,8 @@ type ColorChoice = {
 };
 
 type PositionToEvaluate = {
-    engineELO?: number;
+    engineId: string;
+    engineELO: number;
     fenPosition: string;
 };
 

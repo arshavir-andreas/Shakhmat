@@ -11,7 +11,7 @@ namespace Server.Repositories {
             await conn.OpenAsync();
 
             using var cmd = new OracleCommand(@"
-                SELECT e.id, e.name, e.min_elo, e.max_elo
+                SELECT e.id, e.binary_path, e.name, e.min_elo, e.max_elo
                 FROM engines e
             ", conn);
 
@@ -22,6 +22,7 @@ namespace Server.Repositories {
             while (await reader.ReadAsync()) {
                 res.Add(new Engine {
                     Id = reader["id"].ToString()!,
+                    BinaryPath = reader["binary_path"].ToString()!,
                     Name = reader["name"].ToString()!,
                     MinELO = Convert.ToUInt16(reader["min_elo"]),
                     MaxELO = Convert.ToUInt16(reader["max_elo"]),

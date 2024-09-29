@@ -79,75 +79,73 @@ export default function Chessboard({ engine, pgn }: ChessboardProps) {
         }
     }, [game, isWhiteTurn]);
 
+    const getEngineBestMove = useCallback(async () => {
+        const positionToEvaluate: PositionToEvaluate = {
+            engineId: engine.id,
+            engineELO: engine.ELO,
+            fenPosition: game.fen(),
+        };
+
+        try {
+            const { data } = (await fetcherIncludingCredentials.post(
+                `/engines/best-move`,
+                {
+                    ...positionToEvaluate,
+                },
+            )) as { data: EngineResponse };
+
+            game.move({ ...data }, { strict: true });
+
+            setGamePosition(game.fen());
+
+            dispatch(setGamePGN(game.pgn()));
+
+            checkGameStatus();
+        } catch (error) {
+            console.log(error);
+            
+            const axiosError = (error as AxiosError).response
+                ?.data as ErrorDetails;
+
+            switch (axiosError.statusCode) {
+                case 401:
+                    router.push(`/login`);
+
+                    break;
+                default:
+                    console.log(axiosError);
+
+                    break;
+            }
+        } finally {
+        }  
+    }, [checkGameStatus, dispatch, engine, game, router]);
+
     useEffect(() => {
-        async function getEngineBestMove() {
-            const positionToEvaluate: PositionToEvaluate = {
-                engineELO: engine.ELO,
-                fenPosition: game.fen(),
-            };
-
-            try {
-                const { data } = (await fetcherIncludingCredentials.post(
-                    `/engines/best-move`,
-                    {
-                        ...positionToEvaluate,
-                    },
-                )) as { data: EngineResponse };
-
-                game.move({ ...data }, { strict: true });
-
-                setGamePosition(game.fen());
-
-                dispatch(setGamePGN(game.pgn()));
-
-                checkGameStatus();
-            } catch (error) {
-                const axiosError = (error as AxiosError).response
-                    ?.data as ErrorDetails;
-
-                switch (axiosError.statusCode) {
-                    case 401:
-                        router.push(`/login`);
-
-                        break;
-                    default:
-                        console.log(axiosError);
-
-                        break;
+        async function engineGame() {
+            if (finishedGameStatus !== undefined) {
+                return;
+            }
+    
+            if (isWhiteTurn && engine.isWhite) {
+                await getEngineBestMove();
+    
+                if (finishedGameStatus === undefined) {
+                    setIsWhiteTurn(false);
                 }
-            } finally {
+            } else if (!isWhiteTurn && !engine.isWhite) {
+                await getEngineBestMove();
+    
+                if (finishedGameStatus === undefined) {
+                    setIsWhiteTurn(true);
+                }
             }
         }
 
-        if (finishedGameStatus !== undefined) {
-            return;
-        }
+        engineGame();
+    }, [engine, finishedGameStatus, getEngineBestMove, isWhiteTurn]);
 
-        if (isWhiteTurn && engine.isWhite) {
-            getEngineBestMove();
-
-            if (finishedGameStatus === undefined) {
-                setIsWhiteTurn(false);
-            }
-        } else if (!isWhiteTurn && !engine.isWhite) {
-            getEngineBestMove();
-
-            if (finishedGameStatus === undefined) {
-                setIsWhiteTurn(true);
-            }
-        }
-    }, [
-        checkGameStatus,
-        dispatch,
-        engine.ELO,
-        finishedGameStatus,
-        game,
-        engine.isWhite,
-        isWhiteTurn,
-        router,
-    ]);
-
-    useEffect(() => {
+    useEffect(() => {        
         if (userMoveInputRef.current !== null) {
             if (
                 (!engine.isWhite && isWhiteTurn) ||
@@ -156,7 +154,7 @@ export default function Chessboard({ engine, pgn }: ChessboardProps) {
                 userMoveInputRef.current.focus();
             }
         }
-    }, [engine.isWhite, isWhiteTurn]);
+    }, [engine, isWhiteTurn]);
 
     function handleUserMove(e: FormEvent) {
         e.preventDefault();
