@@ -4,7 +4,6 @@ import { useState } from 'react';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import NewGameAgainstEngineSettings from './components/NewGameAgainstEngineSettings';
-import { RootState, useAppSelector } from './store';
 import { AxiosError } from 'axios';
 import { fetcherIncludingCredentials } from './utils/axios-fetchers';
 import { useRouter } from 'next/navigation';
@@ -16,10 +15,6 @@ export default function Home() {
     const [engines, setEngines] = useState<Engine[]>([]);
 
     const [visible, setVisible] = useState(false);
-
-    const isTheGameReady = useAppSelector(
-        (state: RootState) => state.againstEngineGameSlice.isTheGameReady,
-    );
 
     async function handleNewGameSettings() {
         try {
@@ -52,19 +47,15 @@ export default function Home() {
         <div className="flex justify-center items-center min-h-screen px-4">
             <div className="max-w-4xl">
                 <div>
-                    {!isTheGameReady ? (
-                        <Button
-                            label={`New game`}
-                            onClick={handleNewGameSettings}
-                            className=" mb-[20px]"
-                        />
-                    ) : (
-                        <></>
-                    )}
+                    <Button
+                        label={`New game`}
+                        onClick={handleNewGameSettings}
+                        className=" mb-[20px]"
+                    />
 
                     <Dialog
                         header={`Play against the Arasan engine`}
-                        visible={visible && !isTheGameReady}
+                        visible={visible}
                         className=" w-[300px] sm:w-[400px]"
                         onHide={() => {
                             if (!visible) {
