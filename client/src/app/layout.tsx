@@ -4,6 +4,8 @@ import './globals.css';
 import { PrimeReactProvider } from 'primereact/api';
 import 'primereact/resources/themes/lara-light-green/theme.css';
 
+import 'primeicons/primeicons.css';
+
 import StoreProvider from './store/StoreProvider';
 import ReactQueryClientProvider from './components/ReactQueryClientProvider';
 

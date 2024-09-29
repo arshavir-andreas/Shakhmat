@@ -103,7 +103,7 @@ export default function Chessboard({ engine, pgn }: ChessboardProps) {
             checkGameStatus();
         } catch (error) {
             console.log(error);
-            
+
             const axiosError = (error as AxiosError).response
                 ?.data as ErrorDetails;
 
@@ -118,7 +118,7 @@ export default function Chessboard({ engine, pgn }: ChessboardProps) {
                     break;
             }
         } finally {
-        }  
+        }
     }, [checkGameStatus, dispatch, engine, game, router]);
 
     useEffect(() => {
@@ -126,16 +126,16 @@ export default function Chessboard({ engine, pgn }: ChessboardProps) {
             if (finishedGameStatus !== undefined) {
                 return;
             }
-    
+
             if (isWhiteTurn && engine.isWhite) {
                 await getEngineBestMove();
-    
+
                 if (finishedGameStatus === undefined) {
                     setIsWhiteTurn(false);
                 }
             } else if (!isWhiteTurn && !engine.isWhite) {
                 await getEngineBestMove();
-    
+
                 if (finishedGameStatus === undefined) {
                     setIsWhiteTurn(true);
                 }
@@ -145,7 +145,7 @@ export default function Chessboard({ engine, pgn }: ChessboardProps) {
         engineGame();
     }, [engine, finishedGameStatus, getEngineBestMove, isWhiteTurn]);
 
-    useEffect(() => {        
+    useEffect(() => {
         if (userMoveInputRef.current !== null) {
             if (
                 (!engine.isWhite && isWhiteTurn) ||
@@ -191,9 +191,10 @@ export default function Chessboard({ engine, pgn }: ChessboardProps) {
                 isThePopUpVisible={isFinishedGamePopUpVisible}
                 setIsThePopUpVisible={setIsFinishedGamePopUpVisible}
                 status={finishedGameStatus}
+                router={router}
             />
 
-            <div className=" font-bold text-[18px]">
+            <div className=" font-bold text-[18px] ml-[20px]">
                 <span>
                     {engine.name} {`(${engine.ELO} ELO)`}{' '}
                     {((isWhiteTurn && engine.isWhite) ||
@@ -204,7 +205,7 @@ export default function Chessboard({ engine, pgn }: ChessboardProps) {
                 </span>
             </div>
 
-            <div className=" w-[300px] sm:w-[650px] my-[10px]">
+            <div className=" w-[300px] sm:w-[650px] m-[20px]">
                 <ReactChessboard
                     position={gamePosition}
                     showBoardNotation={false}
@@ -216,15 +217,15 @@ export default function Chessboard({ engine, pgn }: ChessboardProps) {
                 />
             </div>
 
-            <div className=" font-bold text-[18px]">User</div>
+            <div className=" font-bold text-[18px] ml-[20px]">User</div>
 
             <form
                 onSubmit={handleUserMove}
-                className=" flex items-center mt-[10px]"
+                className=" flex items-center mt-[10px] ml-[20px]"
             >
                 <label
                     htmlFor="user-move"
-                    className=" mr-[10px]"
+                    className=" mr-[5px] sm:mr-[10px]"
                 >
                     Move:
                 </label>
@@ -240,11 +241,11 @@ export default function Chessboard({ engine, pgn }: ChessboardProps) {
 
                 <Button
                     type="submit"
-                    className=" ml-[10px]"
+                    icon="pi pi-check"
+                    className=" ml-[5px]"
                     disabled={isUserMoveInputDisabled}
-                >
-                    Go
-                </Button>
+                    raised
+                />
             </form>
 
             <Toast

@@ -65,7 +65,7 @@ export default function Home() {
                     <Dialog
                         header={`Play against the Arasan engine`}
                         visible={visible && !isTheGameReady}
-                        className=" w-[400px]"
+                        className=" w-[300px] sm:w-[400px]"
                         onHide={() => {
                             if (!visible) {
                                 return;
