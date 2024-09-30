@@ -4,7 +4,6 @@ A new pedagogical way to improve chess skills.
 
 [preview.webm](https://github.com/user-attachments/assets/5a50ab63-64f9-4f35-be49-6e7fda61cd3c)
 
-
 * [English](https://github.com/arshavir-andreas/Shakhmat)
 * [Français](https://github.com/arshavir-andreas/Shakhmat/blob/main/README.fr.md)
 
@@ -69,12 +68,24 @@ That web application is written in:
 ###### Requirements:
 
 - Docker
+- Arasan UCI engine
+- Stockfish UCI engine
 
-Open a new terminal and launch the following commands:
+First, clone the repository:
 
 ```bash
 git clone https://github.com/arshavir-andreas/Shakhmat
-cd Shakhmat
+```
+
+1. Extract the Arasan binary executable and all its related files to the ***Shakhmat/server/wwwroot/engines/arasan*** directory.
+2. Extract the Stockfish binary executable to the ***Shakhmat/server/wwwroot/engines/stockfish*** directory.
+
+   > Rename the Stockfish binary to: *stockfish*
+   >
+
+Then run:
+
+```bash
 docker compose -f ./docker-compose.dev.yml up
 ```
 
@@ -85,6 +96,12 @@ Then, open a new terminal and launch this command:
 ```bash
 sh ./oracle-db.init.sh <your-oracle-db-SYSTEM-user-password>
 ```
+
+> To run the server tests, wait for the CLI displaying: "*server_tests exited with code 0*" and open a new terminal:
+>
+> ```bash
+> docker exec server_tests sh -c "dotnet test"
+> ```
 
 Finally, open [**http://localhost:3000/sign-up**](http://localhost:3000/sign-up) in your favorite browser, and create your account.
 
