@@ -4,7 +4,6 @@ Une nouvelle façon pédagogique d'améliorer les compétences aux échecs.
 
 [aperçu.webm](https://github.com/user-attachments/assets/5a50ab63-64f9-4f35-be49-6e7fda61cd3c)
 
-
 * [English](https://github.com/arshavir-andreas/Shakhmat)
 * [Français](https://github.com/arshavir-andreas/Shakhmat/blob/main/README.fr.md)
 
@@ -67,22 +66,34 @@ Cette application Web est écrite en :
 ###### Exigences:
 
 - Docker
+- Arasan (moteur UCI)
+- Stockfish (moteur UCI)
 
-Ouvrez un nouveau terminal et lancez les commandes suivantes :
+Premièrement, clonez le dépôt:
 
 ```bash
 git clone https://github.com/arshavir-andreas/Shakhmat
-cd Shakhmat
-docker compose -f ./docker-compose.dev.yml up
 ```
 
-Attendez que la interface de la ligne de commande affiche : "dotnet watch 🚀 Started".
+* Extractez l'exécutable binaire d'Arasan, ainsi que tous les fichiers qui lui sont liés, dans le dossier : **Shakhmat/server/wwwroot/engines/arasan**.
+* Extractez l'exécutable binaire de Stockfish dans le dossier : **Shakhmat/server/wwwroot/engines/stockfish**.
+
+  > Renommez l'exécutable binaire de Stockfish en: *stockfish-x86-64*
+  >
+
+Attendez que l'interface de la ligne de commande affiche : "dotnet watch 🚀 Started".
 
 Ensuite, ouvrez un nouveau terminal et lancez cette commande :
 
 ```bash
 sh ./oracle-db.init.sh <your-oracle-db-SYSTEM-user-password>
 ```
+
+> Pour lancer les tests du serveur, attendez que l'interface de la ligne de commande affiche : "*server_tests exited with code 0*", et ouvrez un autre terminal : 
+>
+> ```bash
+> docker exec server_tests sh -c "dotnet test"
+> ```
 
 Enfin, ouvrez [**http://localhost:3000/sign-up**](http://localhost:3000/sign-up) dans votre navigateur préféré, et créez votre compte.
 
