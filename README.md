@@ -80,7 +80,7 @@ git clone https://github.com/arshavir-andreas/Shakhmat
 1. Extract the Arasan binary executable and all its related files to the ***Shakhmat/server/wwwroot/engines/arasan*** directory.
 2. Extract the Stockfish binary executable to the ***Shakhmat/server/wwwroot/engines/stockfish*** directory.
 
-   > Rename the Stockfish binary to: *stockfish*
+   > Rename the Stockfish binary executable to: *stockfish-x86-64*
    >
 
 Then run:
