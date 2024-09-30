@@ -17,6 +17,7 @@ import { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
 import { useAppDispatch } from '../store';
 import { setGamePGN } from '../store/againstEngineGameSlice';
+import { ConfirmPopup, confirmPopup } from 'primereact/confirmpopup';
 
 type ChessboardProps = {
     engine: EngineDetails;
@@ -121,6 +122,44 @@ export default function Chessboard({ engine, pgn }: ChessboardProps) {
         }
     }, [checkGameStatus, dispatch, engine, game, router]);
 
+    function resignCurrentGame() {
+        if (isWhiteTurn && !engine.isWhite) {
+            setFinishedGameStatus({
+                winner: 'black',
+            });
+
+            setIsFinishedGamePopUpVisible(true);
+        } else if (!isWhiteTurn && engine.isWhite) {
+            setFinishedGameStatus({
+                winner: 'white',
+            });
+
+            setIsFinishedGamePopUpVisible(true);
+        }
+    }
+
+    function showResignationConfirmPopUp(target: HTMLButtonElement) {
+        confirmPopup({
+            tagKey: 'resignation_confirm_pop-up',
+            target,
+            message: (
+                <div className="flex align-items-center gap-[10px] w-[200px] sm:w-full border-bottom-1 surface-border">
+                    <i className="pi pi-exclamation-circle text-[30px] text-[red]"></i>
+
+                    <span className=" text-[14px] sm:text-[16px]">
+                        Are you sure you want to resign?
+                    </span>
+                </div>
+            ),
+            acceptIcon: 'pi pi-check',
+            rejectIcon: 'pi pi-times',
+            acceptClassName: 'p-button-sm',
+            rejectClassName: 'p-button-outlined p-button-sm',
+            accept: () => resignCurrentGame(),
+            reject: () => {},
+        });
+    }
+
     useEffect(() => {
         async function engineGame() {
             if (finishedGameStatus !== undefined) {
@@ -194,8 +233,10 @@ export default function Chessboard({ engine, pgn }: ChessboardProps) {
                 router={router}
             />
 
-            <div className=" font-bold text-[18px] ml-[20px]">
-                <span>
+            <ConfirmPopup tagKey="resignation_confirm_pop-up" />
+
+            <div className=" ml-[10px] mr-[10px] flex items-center justify-between">
+                <span className=" font-bold text-[18px]">
                     {engine.name} {`(${engine.ELO} ELO)`}{' '}
                     {((isWhiteTurn && engine.isWhite) ||
                         (!isWhiteTurn && !engine.isWhite)) &&
@@ -203,9 +244,18 @@ export default function Chessboard({ engine, pgn }: ChessboardProps) {
                         ? `(Thinking...)`
                         : ``}
                 </span>
+
+                <Button
+                    severity="danger"
+                    onClick={(e) =>
+                        showResignationConfirmPopUp(e.currentTarget)
+                    }
+                >
+                    Resign
+                </Button>
             </div>
 
-            <div className=" w-[300px] sm:w-[650px] m-[20px]">
+            <div className=" w-[300px] sm:w-[650px] m-[10px]">
                 <ReactChessboard
                     position={gamePosition}
                     showBoardNotation={false}
@@ -217,17 +267,17 @@ export default function Chessboard({ engine, pgn }: ChessboardProps) {
                 />
             </div>
 
-            <div className=" font-bold text-[18px] ml-[20px]">User</div>
+            <div className=" font-bold text-[18px] ml-[10px]">You</div>
 
             <form
                 onSubmit={handleUserMove}
-                className=" flex items-center mt-[10px] ml-[20px]"
+                className=" flex items-center ml-[10px]"
             >
                 <label
                     htmlFor="user-move"
-                    className=" mr-[5px] sm:mr-[10px]"
+                    className=" mr-[1px] sm:mr-[10px] font-bold text-[12px] sm:text-[14px]"
                 >
-                    Move:
+                    Your move:
                 </label>
 
                 <InputText
@@ -236,7 +286,7 @@ export default function Chessboard({ engine, pgn }: ChessboardProps) {
                     value={userMove}
                     onChange={(e) => setUserMove(e.target.value)}
                     disabled={isUserMoveInputDisabled}
-                    className="w-[200px] sm:w-[400px]"
+                    className="w-[180px] sm:w-[400px]"
                 />
 
                 <Button
