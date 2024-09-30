@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import { fetcherIncludingCredentials } from '../utils/axios-fetchers';
 import { AxiosError } from 'axios';
 import Link from 'next/link';
+import Loader from '../components/Loader';
 
 export default function Page() {
     const router = useRouter();
@@ -19,6 +20,8 @@ export default function Page() {
     const [newPassword, setNewPassword] = useState('');
     const [newPasswordRetyped, setNewPasswordRetyped] = useState('');
     const [errorMsg, setErrorMsg] = useState('');
+
+    const [isLoading, setIsLoading] = useState(false);
 
     async function handleAccountCreation(e?: FormEvent) {
         if (e !== undefined) {
@@ -32,6 +35,8 @@ export default function Page() {
         }
 
         try {
+            setIsLoading(true);
+
             await fetcherIncludingCredentials.post(`/users`, {
                 username,
                 email,
@@ -45,6 +50,7 @@ export default function Page() {
 
             setErrorMsg(axiosError.message);
         } finally {
+            setIsLoading(false);
         }
     }
 
@@ -54,6 +60,8 @@ export default function Page() {
 
     return (
         <>
+            <Loader isLoading={isLoading} />
+            
             <Card
                 title={`Create your account`}
                 subTitle={`Sign up`}

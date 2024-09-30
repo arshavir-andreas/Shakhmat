@@ -8,6 +8,7 @@ import { AxiosError } from 'axios';
 import { fetcherIncludingCredentials } from './utils/axios-fetchers';
 import { useRouter } from 'next/navigation';
 import { Chessboard } from 'react-chessboard';
+import Loader from './components/Loader';
 
 export default function Home() {
     const router = useRouter();
@@ -16,8 +17,12 @@ export default function Home() {
 
     const [visible, setVisible] = useState(false);
 
+    const [isLoading, setIsLoading] = useState(false);
+
     async function handleNewGameSettings() {
         try {
+            setIsLoading(true);
+
             const { data } = (await fetcherIncludingCredentials.get(
                 `/engines`,
             )) as { data: Engine[] };
@@ -40,12 +45,15 @@ export default function Home() {
                     break;
             }
         } finally {
+            setIsLoading(false);
         }
     }
 
     return (
         <div className="flex justify-center items-center min-h-screen px-4">
             <div className="max-w-4xl">
+                <Loader isLoading={isLoading} />
+
                 <div>
                     <Button
                         label={`New game`}

@@ -5,6 +5,7 @@ import { fetcherIncludingCredentials } from '@/app/utils/axios-fetchers';
 import { useQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import Chessboard from '../../components/Chessboard';
+import Loader from '@/app/components/Loader';
 
 export default function Page({ params }: { params: { id: string } }) {
     const {
@@ -24,7 +25,7 @@ export default function Page({ params }: { params: { id: string } }) {
     });
 
     if (isLoading) {
-        return <div>Loading...</div>;
+        return <Loader isLoading={isLoading} />;
     }
 
     if (isError) {

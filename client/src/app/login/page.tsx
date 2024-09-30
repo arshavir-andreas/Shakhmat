@@ -12,6 +12,7 @@ import { AxiosError } from 'axios';
 import { useAppDispatch } from '../store';
 import { setUserCredentials } from '../store/userSlice';
 import Link from 'next/link';
+import Loader from '../components/Loader';
 
 export default function Page() {
     const router = useRouter();
@@ -19,6 +20,8 @@ export default function Page() {
     const [usernameOrEmail, setUsernameOrEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMsg, setErrorMsg] = useState('');
+
+    const [isLoading, setIsLoading] = useState(false);
 
     const dispatch = useAppDispatch();
 
@@ -28,6 +31,8 @@ export default function Page() {
         }
 
         try {
+            setIsLoading(true);
+
             const { data } = (await fetcherIncludingCredentials.post(
                 `/users/login`,
                 {
@@ -45,6 +50,7 @@ export default function Page() {
 
             setErrorMsg(axiosError.message);
         } finally {
+            setIsLoading(false);
         }
     }
 
@@ -54,6 +60,8 @@ export default function Page() {
 
     return (
         <>
+            <Loader isLoading={isLoading} />
+            
             <Card
                 title={`Log into your account`}
                 subTitle={`Sign in`}
