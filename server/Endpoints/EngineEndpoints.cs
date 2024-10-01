@@ -41,6 +41,12 @@ namespace Server.Endpoints {
                 return Results.Ok(bestMove);
             });
 
+            group.MapPatch("/games/{gameId}", async (EngineService engineService, string gameId, GameToUpdate gameToUpdate) => {
+                await engineService.UpdateGame(id: Convert.ToInt64(gameId), gameToUpdate: gameToUpdate);
+                
+                return Results.Ok();
+            });
+
             return group;
         }
     }

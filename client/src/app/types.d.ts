@@ -46,5 +46,8 @@ type EngineDetails = {
 
 type GameAgainstEngine = {
     engine: EngineDetails;
+    username: string;
     PGN: string;
+    result: string;
+    createdAt: string;
 };

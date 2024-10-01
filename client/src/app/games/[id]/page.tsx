@@ -6,8 +6,13 @@ import { useQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import Chessboard from '../../components/Chessboard';
 import Loader from '@/app/components/Loader';
+import { useEffect } from 'react';
+import { useAppDispatch } from '@/app/store';
+import { setGamePGN, setResult } from '@/app/store/againstEngineGameSlice';
 
 export default function Page({ params }: { params: { id: string } }) {
+    const dispatch = useAppDispatch();
+    
     const {
         data: gameDetails,
         isLoading,
@@ -23,6 +28,14 @@ export default function Page({ params }: { params: { id: string } }) {
             return data;
         },
     });
+
+    useEffect(() => {
+        if (gameDetails !== undefined) {
+            dispatch(setGamePGN(gameDetails.PGN));
+
+            dispatch(setResult(gameDetails.result));
+        }
+    }, [dispatch, gameDetails]);
 
     if (isLoading) {
         return <Loader isLoading={isLoading} />;
@@ -45,11 +58,15 @@ export default function Page({ params }: { params: { id: string } }) {
     return (
         <div className=" flex flex-col sm:flex-row gap-[30px]">
             <Chessboard
+                gameId={params.id}
                 engine={gameDetails!.engine}
-                pgn={gameDetails!.PGN}
             />
 
-            <PgnMovesHistory />
+            <PgnMovesHistory 
+                engine={gameDetails!.engine}
+                username={gameDetails!.username}
+                createdAt={gameDetails!.createdAt}
+            />
         </div>
     );
 }

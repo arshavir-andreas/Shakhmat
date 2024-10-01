@@ -15,19 +15,27 @@ import FinishedGamePopUp from './FinishedGamePopUp';
 import { Toast } from 'primereact/toast';
 import { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
-import { useAppDispatch } from '../store';
-import { setGamePGN } from '../store/againstEngineGameSlice';
+import { RootState, useAppDispatch, useAppSelector } from '../store';
+import { setGamePGN, setResult } from '../store/againstEngineGameSlice';
 import { ConfirmPopup, confirmPopup } from 'primereact/confirmpopup';
 
 type ChessboardProps = {
+    gameId: string;
     engine: EngineDetails;
-    pgn: string;
 };
 
-export default function Chessboard({ engine, pgn }: ChessboardProps) {
+export default function Chessboard({ gameId, engine }: ChessboardProps) {
     const router = useRouter();
 
     const dispatch = useAppDispatch();
+
+    const pgn = useAppSelector(
+        (state: RootState) => state.againstEngineGameSlice.gamePGN,
+    );
+
+    const result = useAppSelector(
+        (state: RootState) => state.againstEngineGameSlice.result,
+    );
 
     const [isWhiteTurn, setIsWhiteTurn] = useState(true);
 
@@ -35,6 +43,8 @@ export default function Chessboard({ engine, pgn }: ChessboardProps) {
         const newGame = new Chess();
 
         newGame.loadPgn(pgn);
+
+        console.log(pgn);
 
         return newGame;
     }, [pgn]);
@@ -64,9 +74,19 @@ export default function Chessboard({ engine, pgn }: ChessboardProps) {
 
     const checkGameStatus = useCallback(() => {
         if (game.isCheckmate()) {
-            setFinishedGameStatus({
-                winner: isWhiteTurn ? `white` : `black`,
-            });
+            if (isWhiteTurn) {
+                setFinishedGameStatus({
+                    winner: `white`,
+                });
+
+                dispatch(setResult('1-0'));
+            } else {
+                setFinishedGameStatus({
+                    winner: `black`,
+                });
+
+                dispatch(setResult('0-1'));
+            }
 
             setIsFinishedGamePopUpVisible(true);
         }
@@ -76,9 +96,11 @@ export default function Chessboard({ engine, pgn }: ChessboardProps) {
                 winner: undefined,
             });
 
+            dispatch(setResult('1/2-1/2'));
+
             setIsFinishedGamePopUpVisible(true);
         }
-    }, [game, isWhiteTurn]);
+    }, [dispatch, game, isWhiteTurn]);
 
     const getEngineBestMove = useCallback(async () => {
         const positionToEvaluate: PositionToEvaluate = {
@@ -128,11 +150,15 @@ export default function Chessboard({ engine, pgn }: ChessboardProps) {
                 winner: 'black',
             });
 
+            dispatch(setResult('0-1'));
+
             setIsFinishedGamePopUpVisible(true);
         } else if (!isWhiteTurn && engine.isWhite) {
             setFinishedGameStatus({
                 winner: 'white',
             });
+
+            dispatch(setResult('1-0'));
 
             setIsFinishedGamePopUpVisible(true);
         }
@@ -161,6 +187,18 @@ export default function Chessboard({ engine, pgn }: ChessboardProps) {
     }
 
     useEffect(() => {
+        if (result !== '*') {
+            setFinishedGameStatus({
+                winner: undefined,
+            });
+        }
+    }, [result]);
+
+    useEffect(() => {
+        setGamePosition(game.fen());
+    }, [game]);
+
+    useEffect(() => {
         async function engineGame() {
             if (finishedGameStatus !== undefined) {
                 return;
@@ -183,6 +221,24 @@ export default function Chessboard({ engine, pgn }: ChessboardProps) {
 
         engineGame();
     }, [engine, finishedGameStatus, getEngineBestMove, isWhiteTurn]);
+
+    useEffect(() => {
+        async function updateGameDetails() {
+            try {
+                await fetcherIncludingCredentials.patch(`/engines/games/${gameId}`, {
+                    pgn: game.pgn(),
+                    result,
+                });
+            } catch (error) {
+                console.log(error);
+            } finally {
+            }
+        }
+
+        if (finishedGameStatus !== undefined) {
+            updateGameDetails();
+        }
+    }, [finishedGameStatus, game, gameId, result]);
 
     useEffect(() => {
         if (userMoveInputRef.current !== null) {
@@ -245,14 +301,18 @@ export default function Chessboard({ engine, pgn }: ChessboardProps) {
                         : ``}
                 </span>
 
-                <Button
-                    severity="danger"
-                    onClick={(e) =>
-                        showResignationConfirmPopUp(e.currentTarget)
-                    }
-                >
-                    Resign
-                </Button>
+                {finishedGameStatus === undefined ? (
+                    <Button
+                        severity="danger"
+                        onClick={(e) =>
+                            showResignationConfirmPopUp(e.currentTarget)
+                        }
+                    >
+                        Resign
+                    </Button>
+                ) : (
+                    <></>
+                )}
             </div>
 
             <div className=" w-[300px] sm:w-[650px] m-[10px]">

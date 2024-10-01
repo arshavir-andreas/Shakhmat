@@ -3,10 +3,12 @@ import type { PayloadAction } from '@reduxjs/toolkit';
 
 export interface AgainstEngineGameState {
     gamePGN: string;
+    result: string;
 }
 
 const initialState: AgainstEngineGameState = {
     gamePGN: '',
+    result: '*',
 };
 
 export const againstEngineGameSlice = createSlice({
@@ -16,9 +18,12 @@ export const againstEngineGameSlice = createSlice({
         setGamePGN: (state, action: PayloadAction<string>) => {
             state.gamePGN = action.payload;
         },
+        setResult: (state, action: PayloadAction<string>) => {
+            state.result = action.payload;
+        },
     },
 });
 
-export const { setGamePGN } = againstEngineGameSlice.actions;
+export const { setGamePGN, setResult, } = againstEngineGameSlice.actions;
 
 export default againstEngineGameSlice.reducer;

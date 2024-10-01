@@ -57,9 +57,10 @@ namespace Server.Repositories {
             await conn.OpenAsync();
 
             using var cmd = new OracleCommand(@"
-                SELECT aeg.engine_id, e.name AS engine_name, aeg.engine_elo, aeg.is_the_engine_white, aeg.pgn, aeg.result, aeg.created_at, aeg.user_id
+                SELECT aeg.engine_id, e.name AS engine_name, u.username, aeg.engine_elo, aeg.is_the_engine_white, aeg.pgn, aeg.result, aeg.created_at, aeg.user_id
                 FROM against_engine_games aeg
                 INNER JOIN engines e ON aeg.engine_id = e.id
+                INNER JOIN users u On aeg.user_id = u.id
                 WHERE aeg.id = :game_id
             ", conn);
 
@@ -75,6 +76,7 @@ namespace Server.Repositories {
                         ELO = Convert.ToUInt16(reader["engine_elo"]),
                         IsWhite = Convert.ToBoolean(reader["is_the_engine_white"]),
                     },
+                    Username = reader["username"].ToString()!,
                     PGN = reader["pgn"].ToString()!,
                     Result = reader["result"].ToString()!,
                     CreatedAt = Convert.ToDateTime(reader["created_at"]),
@@ -83,6 +85,23 @@ namespace Server.Repositories {
             }
 
             return null;
+        }
+
+        public async Task UpdateGame(long id, string pgn, string result) {
+            using var conn = new OracleConnection(_connectionString);
+
+            await conn.OpenAsync();
+
+            using var cmd = new OracleCommand(@"
+                UPDATE against_engine_games SET pgn = :pgn, result = :result
+                WHERE id = :id
+            ", conn);
+
+            cmd.Parameters.Add(new OracleParameter(":pgn", pgn));
+            cmd.Parameters.Add(new OracleParameter(":result", result));
+            cmd.Parameters.Add(new OracleParameter(":id", id));
+
+            await cmd.ExecuteNonQueryAsync();
         }
     }
 }

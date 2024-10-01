@@ -112,5 +112,9 @@ namespace Server.Services {
 
             return formattedEngineResponse;
         }
+
+        public async Task UpdateGame(long id, GameToUpdate gameToUpdate) {
+            await _engineRepository.UpdateGame(id: id, pgn: gameToUpdate.Pgn, result: gameToUpdate.Result);
+        }
     }
 }
