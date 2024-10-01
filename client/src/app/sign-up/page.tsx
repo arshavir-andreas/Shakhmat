@@ -28,6 +28,24 @@ export default function Page() {
             e.preventDefault();
         }
 
+        if (username === '') {
+            setErrorMsg(`The username field is required!`);
+
+            return;
+        }
+
+        if (email === '') {
+            setErrorMsg(`The email field is required!`);
+
+            return;
+        }
+
+        if (newPassword === '' || newPasswordRetyped === '') {
+            setErrorMsg(`The password fields are required!`);
+
+            return;
+        }
+
         if (newPassword !== newPasswordRetyped) {
             setErrorMsg(`The passwords are not equal!`);
 
@@ -55,6 +73,12 @@ export default function Page() {
     }
 
     useEffect(() => {
+        if (username !== '' && !username.match(/^(?!.*__)[a-zA-Z0-9_]{8,20}$/gi)) {
+            setErrorMsg(`The username must be between 8 and 20 characters: it must contain only alphanumerical characters and exactly zero or one underscore.`);
+
+            return;
+        }
+
         setErrorMsg('');
     }, [username, email, newPassword, newPasswordRetyped]);
 
@@ -99,6 +123,7 @@ export default function Page() {
                             className=" w-full"
                             value={username}
                             onChange={(e) => setUsername(e.target.value)}
+                            required
                         />
 
                         <label htmlFor="username">Username</label>
@@ -111,6 +136,7 @@ export default function Page() {
                             className=" w-full"
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
+                            required
                         />
 
                         <label htmlFor="email">Email</label>
@@ -122,6 +148,7 @@ export default function Page() {
                             toggleMask
                             value={newPassword}
                             onChange={(e) => setNewPassword(e.target.value)}
+                            required
                         />
 
                         <label htmlFor="new-password">New password</label>
@@ -135,6 +162,7 @@ export default function Page() {
                             onChange={(e) =>
                                 setNewPasswordRetyped(e.target.value)
                             }
+                            required
                         />
 
                         <label htmlFor="new-password-retyped">

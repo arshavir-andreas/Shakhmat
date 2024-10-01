@@ -30,6 +30,12 @@ export default function Page() {
             e.preventDefault();
         }
 
+        if (usernameOrEmail === '' || password === '') {
+            setErrorMsg(`All the fields are required!`);
+
+            return;
+        }
+
         try {
             setIsLoading(true);
 
@@ -99,9 +105,10 @@ export default function Page() {
                             className=" w-full"
                             value={usernameOrEmail}
                             onChange={(e) => setUsernameOrEmail(e.target.value)}
+                            required
                         />
 
-                        <label htmlFor="username-or-email">Username</label>
+                        <label htmlFor="username-or-email">Username or email</label>
                     </FloatLabel>
 
                     <FloatLabel>
@@ -110,6 +117,7 @@ export default function Page() {
                             toggleMask
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
+                            required
                         />
 
                         <label htmlFor="password">Password</label>
