@@ -6,12 +6,14 @@ import { useQuery } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 import Chessboard from '../../components/Chessboard';
 import Loader from '@/app/components/Loader';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useAppDispatch } from '@/app/store';
 import { setGamePGN, setResult } from '@/app/store/againstEngineGameSlice';
 
 export default function Page({ params }: { params: { id: string } }) {
     const dispatch = useAppDispatch();
+
+    const [pgn, setPGN] = useState('');
     
     const {
         data: gameDetails,
@@ -31,6 +33,8 @@ export default function Page({ params }: { params: { id: string } }) {
 
     useEffect(() => {
         if (gameDetails !== undefined) {
+            setPGN(gameDetails.PGN);
+
             dispatch(setGamePGN(gameDetails.PGN));
 
             dispatch(setResult(gameDetails.result));
@@ -60,6 +64,7 @@ export default function Page({ params }: { params: { id: string } }) {
             <Chessboard
                 gameId={params.id}
                 engine={gameDetails!.engine}
+                pgn={pgn}
             />
 
             <PgnMovesHistory 

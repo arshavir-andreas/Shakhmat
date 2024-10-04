@@ -22,16 +22,13 @@ import { ConfirmPopup, confirmPopup } from 'primereact/confirmpopup';
 type ChessboardProps = {
     gameId: string;
     engine: EngineDetails;
+    pgn: string;
 };
 
-export default function Chessboard({ gameId, engine }: ChessboardProps) {
+export default function Chessboard({ gameId, engine, pgn }: ChessboardProps) {
     const router = useRouter();
 
     const dispatch = useAppDispatch();
-
-    const pgn = useAppSelector(
-        (state: RootState) => state.againstEngineGameSlice.gamePGN,
-    );
 
     const result = useAppSelector(
         (state: RootState) => state.againstEngineGameSlice.result,
@@ -39,12 +36,16 @@ export default function Chessboard({ gameId, engine }: ChessboardProps) {
 
     const [isWhiteTurn, setIsWhiteTurn] = useState(true);
 
+    const [finishedGameStatus, setFinishedGameStatus] = useState<
+        FinishedGameStatus | undefined
+    >({
+        winner: undefined,
+    });
+
     const game = useMemo(() => {
         const newGame = new Chess();
 
         newGame.loadPgn(pgn);
-
-        console.log(pgn);
 
         return newGame;
     }, [pgn]);
@@ -54,10 +55,6 @@ export default function Chessboard({ gameId, engine }: ChessboardProps) {
     const [userMove, setUserMove] = useState('');
 
     const userMoveInputRef = useRef<HTMLInputElement>(null);
-
-    const [finishedGameStatus, setFinishedGameStatus] = useState<
-        FinishedGameStatus | undefined
-    >(undefined);
 
     const [isFinishedGamePopUpVisible, setIsFinishedGamePopUpVisible] =
         useState(false);
@@ -187,10 +184,27 @@ export default function Chessboard({ gameId, engine }: ChessboardProps) {
     }
 
     useEffect(() => {
-        if (result !== '*') {
-            setFinishedGameStatus({
-                winner: undefined,
-            });
+        if (result === '*') {
+            setFinishedGameStatus(undefined);
+        } else {
+            switch (result) {
+                case '1-0':
+                    setFinishedGameStatus({
+                        winner: 'white',
+                    });
+
+                    break;
+                case '0-1':
+                    setFinishedGameStatus({
+                        winner: 'black',
+                    });
+                default:
+                    setFinishedGameStatus({
+                        winner: undefined,
+                    });
+
+                    break;
+            }
         }
     }, [result]);
 
@@ -200,7 +214,7 @@ export default function Chessboard({ gameId, engine }: ChessboardProps) {
 
     useEffect(() => {
         async function engineGame() {
-            if (finishedGameStatus !== undefined) {
+            if (finishedGameStatus !== undefined || result !== '*') {
                 return;
             }
 
@@ -220,7 +234,7 @@ export default function Chessboard({ gameId, engine }: ChessboardProps) {
         }
 
         engineGame();
-    }, [engine, finishedGameStatus, getEngineBestMove, isWhiteTurn]);
+    }, [engine, finishedGameStatus, getEngineBestMove, isWhiteTurn, result]);
 
     useEffect(() => {
         async function updateGameDetails() {
