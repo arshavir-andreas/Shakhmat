@@ -8,3 +8,7 @@
     @tailwind components;
     @tailwind utilities;
 }
+
+body {
+    background-color: rgb(237, 237, 253);
+}
