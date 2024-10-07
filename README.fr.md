@@ -2,7 +2,8 @@
 
 Une nouvelle façon pédagogique d'améliorer les compétences aux échecs.
 
-[aperçu.webm](https://github.com/user-attachments/assets/5a50ab63-64f9-4f35-be49-6e7fda61cd3c)
+[preview.webm](https://github.com/user-attachments/assets/abd97be0-8383-4bb3-9ca6-16e232b88105)
+
 
 * [English](https://github.com/arshavir-andreas/Shakhmat)
 * [Français](https://github.com/arshavir-andreas/Shakhmat/blob/main/README.fr.md)
