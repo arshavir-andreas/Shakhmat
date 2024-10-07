@@ -9,6 +9,8 @@ import { fetcherIncludingCredentials } from './utils/axios-fetchers';
 import { useRouter } from 'next/navigation';
 import { Chessboard } from 'react-chessboard';
 import Loader from './components/Loader';
+import { useAppDispatch } from './store';
+import { setGamePGN, setResult } from './store/againstEngineGameSlice';
 
 export default function Home() {
     const router = useRouter();
@@ -19,9 +21,14 @@ export default function Home() {
 
     const [isLoading, setIsLoading] = useState(false);
 
+    const dispatch = useAppDispatch();
+
     async function handleNewGameSettings() {
         try {
             setIsLoading(true);
+
+            dispatch(setGamePGN(''));
+            dispatch(setResult('*'));
 
             const { data } = (await fetcherIncludingCredentials.get(
                 `/engines`,

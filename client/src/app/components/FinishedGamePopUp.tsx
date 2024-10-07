@@ -1,20 +1,23 @@
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
+import { RootState, useAppSelector } from '../store';
 
 type FinishedGamePopUpProps = {
     isThePopUpVisible: boolean;
     setIsThePopUpVisible: (value: boolean) => void;
-    status: FinishedGameStatus | undefined;
     router: AppRouterInstance;
 };
 
 export default function FinishedGamePopUp({
-    status,
     isThePopUpVisible,
     setIsThePopUpVisible,
     router,
 }: FinishedGamePopUpProps) {
+    const result = useAppSelector(
+        (state: RootState) => state.againstEngineGameSlice.result,
+    );
+    
     return (
         <Dialog
             header={`Game completed!`}
@@ -30,9 +33,9 @@ export default function FinishedGamePopUp({
         >
             <div className=" grid gap-[20px]">
                 <div>
-                    {status?.winner === undefined ? (
+                    {result === '1/2-1/2' ? (
                         <div>The game is drawn!</div>
-                    ) : status.winner === 'white' ? (
+                    ) : result === '1-0' ? (
                         <div>White won!</div>
                     ) : (
                         <div>Black won!</div>

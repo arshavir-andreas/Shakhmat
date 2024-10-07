@@ -36,12 +36,6 @@ export default function Chessboard({ gameId, engine, pgn }: ChessboardProps) {
 
     const [isWhiteTurn, setIsWhiteTurn] = useState(true);
 
-    const [finishedGameStatus, setFinishedGameStatus] = useState<
-        FinishedGameStatus | undefined
-    >({
-        winner: undefined,
-    });
-
     const game = useMemo(() => {
         const newGame = new Chess();
 
@@ -63,25 +57,17 @@ export default function Chessboard({ gameId, engine, pgn }: ChessboardProps) {
         return (
             (!engine.isWhite && !isWhiteTurn) ||
             (engine.isWhite && isWhiteTurn) ||
-            finishedGameStatus !== undefined
+            result !== '*'
         );
-    }, [finishedGameStatus, engine.isWhite, isWhiteTurn]);
+    }, [result, engine.isWhite, isWhiteTurn]);
 
     const userMoveErrorToast = useRef<Toast>(null!);
 
     const checkGameStatus = useCallback(() => {
         if (game.isCheckmate()) {
             if (isWhiteTurn) {
-                setFinishedGameStatus({
-                    winner: `white`,
-                });
-
                 dispatch(setResult('1-0'));
             } else {
-                setFinishedGameStatus({
-                    winner: `black`,
-                });
-
                 dispatch(setResult('0-1'));
             }
 
@@ -89,10 +75,6 @@ export default function Chessboard({ gameId, engine, pgn }: ChessboardProps) {
         }
 
         if (game.isDraw()) {
-            setFinishedGameStatus({
-                winner: undefined,
-            });
-
             dispatch(setResult('1/2-1/2'));
 
             setIsFinishedGamePopUpVisible(true);
@@ -142,22 +124,12 @@ export default function Chessboard({ gameId, engine, pgn }: ChessboardProps) {
     }, [checkGameStatus, dispatch, engine, game, router]);
 
     function resignCurrentGame() {
-        if (isWhiteTurn && !engine.isWhite) {
-            setFinishedGameStatus({
-                winner: 'black',
-            });
-
-            dispatch(setResult('0-1'));
-
-            setIsFinishedGamePopUpVisible(true);
-        } else if (!isWhiteTurn && engine.isWhite) {
-            setFinishedGameStatus({
-                winner: 'white',
-            });
-
+        if (engine.isWhite) {
             dispatch(setResult('1-0'));
 
             setIsFinishedGamePopUpVisible(true);
+        } else{
+            dispatch(setResult('0-1'));
         }
     }
 
@@ -184,57 +156,32 @@ export default function Chessboard({ gameId, engine, pgn }: ChessboardProps) {
     }
 
     useEffect(() => {
-        if (result === '*') {
-            setFinishedGameStatus(undefined);
-        } else {
-            switch (result) {
-                case '1-0':
-                    setFinishedGameStatus({
-                        winner: 'white',
-                    });
-
-                    break;
-                case '0-1':
-                    setFinishedGameStatus({
-                        winner: 'black',
-                    });
-                default:
-                    setFinishedGameStatus({
-                        winner: undefined,
-                    });
-
-                    break;
-            }
-        }
-    }, [result]);
-
-    useEffect(() => {
         setGamePosition(game.fen());
     }, [game]);
 
     useEffect(() => {
         async function engineGame() {
-            if (finishedGameStatus !== undefined || result !== '*') {
+            if (result !== '*') {
                 return;
             }
 
             if (isWhiteTurn && engine.isWhite) {
                 await getEngineBestMove();
 
-                if (finishedGameStatus === undefined) {
+                if (result === '*') {
                     setIsWhiteTurn(false);
                 }
             } else if (!isWhiteTurn && !engine.isWhite) {
                 await getEngineBestMove();
 
-                if (finishedGameStatus === undefined) {
+                if (result === '*') {
                     setIsWhiteTurn(true);
                 }
             }
         }
 
         engineGame();
-    }, [engine, finishedGameStatus, getEngineBestMove, isWhiteTurn, result]);
+    }, [engine, getEngineBestMove, isWhiteTurn, result]);
 
     useEffect(() => {
         async function updateGameDetails() {
@@ -249,10 +196,10 @@ export default function Chessboard({ gameId, engine, pgn }: ChessboardProps) {
             }
         }
 
-        if (finishedGameStatus !== undefined) {
+        if (result !== '*') {
             updateGameDetails();
         }
-    }, [finishedGameStatus, game, gameId, result]);
+    }, [game, gameId, result]);
 
     useEffect(() => {
         if (userMoveInputRef.current !== null) {
@@ -299,7 +246,6 @@ export default function Chessboard({ gameId, engine, pgn }: ChessboardProps) {
             <FinishedGamePopUp
                 isThePopUpVisible={isFinishedGamePopUpVisible}
                 setIsThePopUpVisible={setIsFinishedGamePopUpVisible}
-                status={finishedGameStatus}
                 router={router}
             />
 
@@ -310,12 +256,12 @@ export default function Chessboard({ gameId, engine, pgn }: ChessboardProps) {
                     {engine.name} {`(${engine.ELO} ELO)`}{' '}
                     {((isWhiteTurn && engine.isWhite) ||
                         (!isWhiteTurn && !engine.isWhite)) &&
-                    finishedGameStatus === undefined
+                    result === '*'
                         ? `(Thinking...)`
                         : ``}
                 </span>
 
-                {finishedGameStatus === undefined ? (
+                {result === '*' ? (
                     <Button
                         severity="danger"
                         onClick={(e) =>
