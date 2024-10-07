@@ -56,7 +56,7 @@ Cette application Web est écrite en :
 - [X] ~~Choix des moteurs d'échecs~~
 - [X] ~~Enregistrement du compte utilisateur~~
 - [X] ~~Authentification et autorisation des utilisateurs~~
-- [ ] Export PGN
+- [X] ~~Export PGN~~
 - [ ] Jeux en temps réel contre d'autres joueurs humains
 
 ## Commencer
@@ -89,7 +89,7 @@ Ensuite, ouvrez un nouveau terminal et lancez cette commande :
 sh ./oracle-db.init.sh <your-oracle-db-SYSTEM-user-password>
 ```
 
-> Pour lancer les tests du serveur, attendez que l'interface de la ligne de commande affiche : "*server_tests exited with code 0*", et ouvrez un autre terminal : 
+> Pour lancer les tests du serveur, attendez que l'interface de la ligne de commande affiche : "*server_tests exited with code 0*", et ouvrez un autre terminal :
 >
 > ```bash
 > docker exec server_tests sh -c "dotnet test"

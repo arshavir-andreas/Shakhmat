@@ -58,7 +58,7 @@ That web application is written in:
 * [X] ~~Chess engines choice~~
 * [X] ~~User account registering~~
 * [X] ~~User authentication and authorization~~
-* [ ] PGN export
+* [X] ~~PGN export~~
 * [ ] Real-time games against other human players
 
 ## Getting started
